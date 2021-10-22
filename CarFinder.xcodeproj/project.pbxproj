@@ -13,6 +13,10 @@
 		28AF07FE271B7A0A0008121D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28AF07FD271B7A0A0008121D /* Preview Assets.xcassets */; };
 		28AF0800271B7A0A0008121D /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AF07FF271B7A0A0008121D /* Persistence.swift */; };
 		28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 28AF0801271B7A0A0008121D /* CarFinder.xcdatamodeld */; };
+		28D28882271B82C70039CB72 /* ParkingSpotEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */; };
+		28D28884271B8E920039CB72 /* Map_ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28883271B8E920039CB72 /* Map_ViewModel.swift */; };
+		28D28886271CB8630039CB72 /* Map_Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28885271CB8630039CB72 /* Map_Model.swift */; };
+		28D28888271F51790039CB72 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28887271F51790039CB72 /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +27,10 @@
 		28AF07FD271B7A0A0008121D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		28AF07FF271B7A0A0008121D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		28AF0802271B7A0A0008121D /* CarFinder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CarFinder.xcdatamodel; sourceTree = "<group>"; };
+		28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingSpotEntity.swift; sourceTree = "<group>"; };
+		28D28883271B8E920039CB72 /* Map_ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_ViewModel.swift; sourceTree = "<group>"; };
+		28D28885271CB8630039CB72 /* Map_Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_Model.swift; sourceTree = "<group>"; };
+		28D28887271F51790039CB72 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +64,9 @@
 			isa = PBXGroup;
 			children = (
 				28AF07F6271B7A090008121D /* CarFinderApp.swift */,
-				28AF07F8271B7A090008121D /* ContentView.swift */,
+				28D2887E271B80620039CB72 /* Model */,
+				28D2887F271B806D0039CB72 /* ViewModels */,
+				28D28880271B80790039CB72 /* Views */,
 				28AF07FA271B7A0A0008121D /* Assets.xcassets */,
 				28AF07FF271B7A0A0008121D /* Persistence.swift */,
 				28AF0801271B7A0A0008121D /* CarFinder.xcdatamodeld */,
@@ -71,6 +81,32 @@
 				28AF07FD271B7A0A0008121D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		28D2887E271B80620039CB72 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				28D28885271CB8630039CB72 /* Map_Model.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		28D2887F271B806D0039CB72 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */,
+				28D28883271B8E920039CB72 /* Map_ViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		28D28880271B80790039CB72 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				28AF07F8271B7A090008121D /* ContentView.swift */,
+				28D28887271F51790039CB72 /* MapView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,10 +179,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28D28882271B82C70039CB72 /* ParkingSpotEntity.swift in Sources */,
+				28D28888271F51790039CB72 /* MapView.swift in Sources */,
 				28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */,
 				28AF0800271B7A0A0008121D /* Persistence.swift in Sources */,
 				28AF07F9271B7A090008121D /* ContentView.swift in Sources */,
+				28D28886271CB8630039CB72 /* Map_Model.swift in Sources */,
 				28AF07F7271B7A090008121D /* CarFinderApp.swift in Sources */,
+				28D28884271B8E920039CB72 /* Map_ViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +320,7 @@
 				DEVELOPMENT_TEAM = XXF7Y2ZTA7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs to know where you are to guide you back to your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -310,6 +351,7 @@
 				DEVELOPMENT_TEAM = XXF7Y2ZTA7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs to know where you are to guide you back to your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

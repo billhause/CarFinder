@@ -13,8 +13,8 @@ struct CarFinderApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            ContentView(theMap_ViewModel: Map_ViewModel())
+                .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
         }
     }
 }
