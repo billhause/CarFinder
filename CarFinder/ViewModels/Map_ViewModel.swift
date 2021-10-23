@@ -50,6 +50,55 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         //mLocationManager?.allowsBackgroundLocationUpdates = true //must include the UIBackgroundModes key in the Info.plist
         
     }
+
+    // Sometimes the device will not have the first choice symbol so check first
+    // Return a default that is always present
+    func getParkingLocationImageName() -> String {
+        //    systemName:"parkingsign.circle.fill"
+        //    systemName:"parkingsign.circle"
+        //    systemName:"car"
+        //    systemName:"car.fill"
+        //    systemName:"circle.fill")
+        //    systemName:"note.text"
+        //    systemName:"parkingsign"
+        //    systemName:"parkingsign.circle.fill"
+        //    systemName:"parkingsign.circle"
+        //    systemName:"figure.walk"
+        //    systemName:"figure.stand"
+        //    systemName:"dot.arrowtriangles.up.right.down.left.circle"
+        //    systemName:"doc.richtext"
+
+        // Check symbols in order of preference
+        if UIImage(systemName: "parkingsign.circle") != nil { return "parkingsign.circle" }
+        if UIImage(systemName: "parkingsign") != nil { return "parkingsign" }
+        if UIImage(systemName: "car") != nil { return "car" }
+        return "triangle" // default that is always there on all devices
+    }
+
+    // Sometimes the device will not have the first choice symbol so check first
+    // Return a default that is always present
+    func getOrientMapImageName() -> String {
+        //    systemName:"parkingsign.circle.fill"
+        //    systemName:"parkingsign.circle"
+        //    systemName:"car"
+        //    systemName:"car.fill"
+        //    systemName:"circle.fill")
+        //    systemName:"note.text"
+        //    systemName:"parkingsign"
+        //    systemName:"parkingsign.circle.fill"
+        //    systemName:"parkingsign.circle"
+        //    systemName:"figure.walk"
+        //    systemName:"figure.stand"
+        //    systemName:"dot.arrowtriangles.up.right.down.left.circle"
+        //    systemName:"doc.richtext"
+
+        // Check symbols in order of preference
+        
+        if UIImage(systemName: "dot.circle.viewfinder") != nil { return "dot.circle.viewfinder" }
+        if UIImage(systemName: "dot.arrowtriangles.up.right.down.left.circle") != nil { return "dot.arrowtriangles.up.right.down.left.circle" }
+        return "triangle" // default that is always there on all devices
+    }
+
     
     // MARK: CLLocationManagerDelegate Functions
 
