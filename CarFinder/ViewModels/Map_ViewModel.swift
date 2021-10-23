@@ -21,11 +21,11 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // Mark: Flag Variables
     var isHybrid: Bool {
         get {
-            print("Map_ViewModel.isHybrid GET Called")
+//            print("Map_ViewModel.isHybrid GET Called")
             return theMapModel.isHybrid
         }
         set(newValue) {
-            print("Map_ViewModel.isHybrid set(\(newValue))")
+//            print("Map_ViewModel.isHybrid set(\(newValue))")
             theMapModel.isHybrid = newValue
         }
     }

@@ -11,24 +11,35 @@ import CoreData
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-
-//    Add 'Orient Map' button to center on current CLLocation
-//    Add 'Update Spot' button to move the parking spot to the current location
     
     var body: some View {
         NavigationView {
             VStack {
                 MapView(theMap_ViewModel: theMap_ViewModel)
                 HStack {
-                    Spacer()
                     Button("Orient Map") {
                         print("Orient Map Pressed")
+                    } .padding()
+                    
+                    // USE EITHER A PICKER or a TOGGLE below comment one out
+                    
+                    // Picker
+                    Picker("What kind of map do you want", selection: $theMap_ViewModel.isHybrid) {
+                        Text("Hybrid").tag(true)
+                        Text("Standard").tag(false)
                     }
-                    Spacer()
-                    Toggle("Hybrid", isOn: $theMap_ViewModel.isHybrid)
-                        .onChange(of: theMap_ViewModel.isHybrid) { value in
-                            print("Hybrid Button Toggled to \(value)")
-                        }
+                    .pickerStyle(.segmented)
+                    .onChange(of: theMap_ViewModel.isHybrid) { value in
+                        print("Hybrid Picker Called \(value)")
+                    }
+                    
+//                    // Toggle
+//                    Toggle(isOn: $theMap_ViewModel.isHybrid) {
+//                        Text("Hybrid")
+//                    }.fixedSize()
+//                    .onChange(of: theMap_ViewModel.isHybrid) { value in
+//                        print("Hybrid Toggle Called \(value)")
+//                    }
                 }
                 .padding()
             }
@@ -47,7 +58,7 @@ struct ContentView: View {
                     //    systemName:"figure.stand"
                     //    systemName:"dot.arrowtriangles.up.right.down.left.circle"
                     //    systemName:"doc.richtext"
-                    Button(action: addItem) {
+                    Button(action: orientMap) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
 //                        Label("Update Spot", systemImage: "car")
                         Label("Update Spot", systemImage: "parkingsign.circle")
@@ -59,13 +70,10 @@ struct ContentView: View {
 
         }
     }
-
     
-    
-    
-    private func addItem() {
+    private func orientMap() {
         withAnimation {
-            print("addItem() called wdh")
+            print("ContentView.orientMap() called wdh")
         }
     }
 

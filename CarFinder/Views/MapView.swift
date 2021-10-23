@@ -166,7 +166,7 @@ struct MapView: UIViewRepresentable {
         
         // The location of the user was updated.
         func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation) {
-            print("Called: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
+//            print("Called: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
         }
         
         // An attempt to locate the user’s position failed.
