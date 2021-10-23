@@ -20,7 +20,7 @@ struct MapView: UIViewRepresentable {
         // It returns an instance of the class MapViewCoordinator which we also made below
         // MapViewCoordinator implements the MKMapViewDelegate protocol and has a method to return
         // a renderer for the polyline layer
-        return MapViewCoordinator()
+        return MapViewCoordinator(theMap_ViewModel)
     }
     
     // Required by UIViewRepresentable protocol
@@ -95,6 +95,13 @@ struct MapView: UIViewRepresentable {
     //   - Respond to map position changes etc.
     // This class is defined INSIDE the MapView Struct
     class MapViewCoordinator: NSObject, MKMapViewDelegate {
+        var theMap_ViewModel: Map_ViewModel
+        
+        // We need an init so we can pass in the Map_ViewModel class
+        init(_ theMapVM: Map_ViewModel) {
+            theMap_ViewModel = theMapVM
+        }
+        
         
         // Added to render the PolyLine Overlay to draw the route between two points
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -200,11 +207,12 @@ struct MapView: UIViewRepresentable {
               
             let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
   
-            // Sometimes systemName images are not available to provide default values
-            let dotImage = UIImage(systemName:"parkingsign.circle.fill")?.withTintColor(theColor) ??
-                UIImage(systemName:"parkingsign.circle")?.withTintColor(theColor) ??
-                UIImage(systemName:"car")?.withTintColor(theColor) ?? // If no parking circle image then use car image
-                UIImage(systemName:"circle.fill")!.withTintColor(theColor) // This image is always available so default to this.
+            let dotImage = UIImage(systemName: theMap_ViewModel.getParkingLocationImageName())!.withTintColor(theColor)
+print("WDH X211")
+//            let dotImage = UIImage(systemName:"parkingsign.circle.fill")?.withTintColor(theColor) ??
+//                UIImage(systemName:"parkingsign.circle")?.withTintColor(theColor) ??
+//                UIImage(systemName:"car")?.withTintColor(theColor) ?? // If no parking circle image then use car image
+//                UIImage(systemName:"circle.fill")!.withTintColor(theColor) // This image is always available so default to this.
             
 //            let dotImage = UIImage(systemName:"car")?.withTintColor(theColor) ??
 //            let dotImage = UIImage(systemName:"note.text")?.withTintColor(theColor) ??
@@ -217,6 +225,7 @@ struct MapView: UIViewRepresentable {
 //            let dotImage = UIImage(systemName:"doc.richtext")?.withTintColor(theColor) ??
             let size = CGSize(width: dotSize, height: dotSize)
 
+            // Create Annotation Image and return it
             annotationView.image = UIGraphicsImageRenderer(size:size).image {
                 _ in dotImage.draw(in:CGRect(origin:.zero, size:size))
             }

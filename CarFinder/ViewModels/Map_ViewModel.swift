@@ -137,7 +137,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // MARK: Intent Functions
     func updateParkingSpot() {
         // TODO: Update the ParkingSpotEntity to have the current lat/lon
-        
+        print("Map_ViewModel.updateParkingSpot() called but not implemented yet")
     }
     
     
@@ -145,6 +145,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     func getRegionToShow() -> MKCoordinateRegion {
         // TODO: Return a bounding box centered on the current location and containing the ParkingSpot
+        print("Map_ViewMode.getRegionToShow() called but not implemented yet")
         let region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 39.95, longitude: -104.96),
             span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
@@ -153,12 +154,12 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
 
     
     func getParkingSpot() -> MKPlacemark {
-        // TODO: Make this return the current ParkingSpot lat/lon
+        // TODO: Make this return the current ParkingSpot lat/lon from the Core Data entity
         // Grandma's House 40.02639828963394, -105.27067477468266
 //        return MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: 40.02639828963394, longitude: -105.27067477468266))
         
         // Apple Headquarters - latitude: 37.33182, longitude: -122.03118
-        return MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: 37.33182, longitude: -122.03118))
+        return MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: 40.0, longitude: -105.0))
         
     }
         

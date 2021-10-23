@@ -11,8 +11,9 @@ import CoreData
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-    
-//Fix the gap at the top of the map or get the orient map button working
+        
+Make Hybrid/Standard CIEdgeWork
+Make Orient Map button work
     
     var body: some View {
         NavigationView {
