@@ -17,11 +17,15 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
+                Spacer()
                 MapView(theMap_ViewModel: theMap_ViewModel)
             }
+            .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
+            .navigationBarHidden(false)
+
             .toolbar {
                 
-                ToolbarItemGroup() { // Top Toolbar
+                ToolbarItem(placement: ToolbarItemPlacement.automatic) { // Top Toolbar
                     Button(action: updateParkingSpot) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
                         let imageString = theMap_ViewModel.getParkingLocationImageName()
