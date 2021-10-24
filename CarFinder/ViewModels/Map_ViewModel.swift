@@ -19,17 +19,25 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     private var mLocationManager: CLLocationManager?
     
     // Mark: Flag Variables
-    var isHybrid: Bool {
+    var isHybrid: Bool { // Expose this so the View can modify it indirectily through the ViewModel
         get {
-//            print("Map_ViewModel.isHybrid GET Called")
             return theMapModel.isHybrid
         }
         set(newValue) {
-//            print("Map_ViewModel.isHybrid set(\(newValue))")
             theMapModel.isHybrid = newValue
         }
     }
-    
+
+    // Flag to signal to the map that the user wants the map re-centered and oriented in his direction
+    var orientMapFlag: Bool {
+        get {
+            return theMapModel.orientMapFlag
+        }
+        set(orientFlag) {
+            theMapModel.orientMapFlag = orientFlag
+        }
+    }
+
     // MARK: Init Functions
     override init() {
         print("Map_ViewModel init() called")
@@ -51,6 +59,15 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         
     }
 
+    func orientMap() {
+        orientMapFlag = true //  Trigger map update
+    }
+    
+    // Return a rect that has the current location as the center and the parking spot at the edge
+//wdhx    func getBoundingRect() -> MKMapRect {
+//        mLocationManager.get last known location
+//    }
+    
     // Sometimes the device will not have the first choice symbol so check first
     // Return a default that is always present
     func getParkingLocationImageName() -> String {
@@ -103,10 +120,28 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // MARK: CLLocationManagerDelegate Functions
 
     // REQUIRED - Tells the delegate that new location data is available.
+    // The MOST RECENT location is the last one in the array
     func locationManager(_ locationManager: CLLocationManager, didUpdateLocations: [CLLocation]) {
-        print("Called: locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation])")
+        print("**Called: locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation]), updateParkingSpotFlag=\(theMapModel.updateParkingSpotFlag)")
+        
+        if theMapModel.updateParkingSpotFlag == true {
+            // Update the parking spot location and set the flag back to false
+            theMapModel.updateParkingSpotFlag = false
+            let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element
+            ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
+            print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
+        }
     }
 
+    // REQUIRED
+    // This must be implemented or you'll get a runtime error when requesting a map location update
+    // Tells the delegate that the location manager was unable to retrieve a location value.
+    func locationManager(_ locationManager: CLLocationManager, didFailWithError: Error) {
+        print("wdh ERROR Map_ViewModel.locationManager(didFailWithError) Error: \(didFailWithError.localizedDescription)")
+    }
+    
+
+    
 //    // Heading - Tells the delegate that the location manager received updated heading information.
 //    // Note: Must have previously called mLocationManager?.startUpdatingHeading() for this to be called
 //    func locationManager(_ locationManager: CLLocationManager, didUpdateHeading: CLHeading) {}
@@ -114,8 +149,6 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
 //    // Tells the delegate when the app creates the location manager and when the authorization status changes.
 //    func locationManagerDidChangeAuthorization(_ locationManager: CLLocationManager) {}
 //
-//    // Tells the delegate that the location manager was unable to retrieve a location value.
-//    func locationManager(_ locationManager: CLLocationManager, didFailWithError: Error) {}
 //
 //    // Tells the delegate that updates will no longer be deferred.
 //    func locationManager(_ locationManager: CLLocationManager, didFinishDeferredUpdatesWithError: Error?) {}
@@ -136,11 +169,16 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     // MARK: Intent Functions
     func updateParkingSpot() {
-        // TODO: Update the ParkingSpotEntity to have the current lat/lon
-        print("Map_ViewModel.updateParkingSpot() called but not implemented yet")
+        print("Map_ViewModel.updateParkingSpot() wdh Intent Function")
+        
+        // Set the Flag to tell the callback to upate the parking spot location SEE: locationManager(didUpdateLocations:) in this same class
+        theMapModel.updateParkingSpotFlag = true
+        
+        // Tell the location manager to upate the location and call the locationManager(didUpdateLocations:) function above.
+        mLocationManager?.requestLocation()
     }
     
-    
+        
     // MARK: Getters
     
     func getRegionToShow() -> MKCoordinateRegion {
@@ -154,24 +192,12 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
 
     
     func getParkingSpot() -> MKPlacemark {
-        // TODO: Make this return the current ParkingSpot lat/lon from the Core Data entity
+        let theCoord = CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
+        return MKPlacemark(coordinate: theCoord)
         // Grandma's House 40.02639828963394, -105.27067477468266
-//        return MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: 40.02639828963394, longitude: -105.27067477468266))
-        
         // Apple Headquarters - latitude: 37.33182, longitude: -122.03118
-        return MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: 40.0, longitude: -105.0))
-        
     }
         
-    // Flag to signal to the map that the user wants the map re-centered and oriented in his direction
-    var orientMapFlag: Bool {
-        get {
-            return theMapModel.orientMapFlag
-        }
-        set(orientFlag) {
-            theMapModel.orientMapFlag = orientFlag
-        }
-    }
     
 }
 

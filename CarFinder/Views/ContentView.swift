@@ -11,10 +11,7 @@ import CoreData
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-        
-Make Hybrid/Standard CIEdgeWork
-Make Orient Map button work
-    
+            
     var body: some View {
         NavigationView {
             VStack {
@@ -22,7 +19,7 @@ Make Orient Map button work
                 MapView(theMap_ViewModel: theMap_ViewModel)
             }
             .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
-            .navigationBarHidden(false)
+//            .navigationBarHidden(false)
 
             .toolbar {
                 
@@ -70,12 +67,15 @@ Make Orient Map button work
     }
     
     private func orientMap() {
-        print("orientMap() called")
+        withAnimation {
+            print("ContentView.orientMap() called")
+            theMap_ViewModel.orientMap() // Call intent function
+        }
     }
     
     private func updateParkingSpot() {
         withAnimation {
-            print("ContentView.updateParkingSpot() called wdh")
+            theMap_ViewModel.updateParkingSpot() // Call intent function
         }
     }
 
@@ -86,7 +86,5 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(theMap_ViewModel: Map_ViewModel())
             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
-//        ContentView(theMap_ViewModel: Map_ViewModel())
-//            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

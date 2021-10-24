@@ -42,18 +42,16 @@ extension ParkingSpotEntity: Comparable {    // Making Comparable so that it can
         } else {
             // No ParkingSpotEntity was found so create one, save it and return it
             let theParkingSpotEntity = ParkingSpotEntity(context: viewContext)
-            theParkingSpotEntity.updateToCurrentLocation(andSave: true)
+            theParkingSpotEntity.updateLocation(lat: 40.0, lon: -105.0, andSave: true) // default to 40,-105
 //            theParkingSpotEntity.objectWillChange.send()
             return theParkingSpotEntity
         }
     }
 
-    // Update the ParkingSpot location to the current location and save it
-    public func updateToCurrentLocation(andSave shouldSave: Bool) {
-        // TODO: Get the current location coordinates instead of hardcoding them
-        lat = Double(40.0)
-        lon = Double(-105.0)
-
+    // Update the ParkingSpot location to the specified location and save it
+    public func updateLocation(lat theLat: Double, lon theLon: Double, andSave shouldSave: Bool) {
+        lat = theLat
+        lon = theLon
         if shouldSave {
             // Now save the location to the database
             let viewContext = PersistenceController.shared.container.viewContext

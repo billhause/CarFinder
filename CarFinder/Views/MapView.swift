@@ -39,17 +39,19 @@ struct MapView: UIViewRepresentable {
 
 
         // Initialize Map Settings
-        mapView.userTrackingMode = MKUserTrackingMode.follow
-        mapView.showsUserLocation = true
-        mapView.isPitchEnabled = true
-        mapView.isRotateEnabled = true
-        mapView.showsBuildings = true
-        mapView.showsCompass = true
-        mapView.showsScale = true
+        mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
+        mapView.showsUserLocation = true // Start map showing the user as a blue dot
+//        mapView.isPitchEnabled = true
+//        mapView.isRotateEnabled = true
+//        mapView.showsBuildings = true
+//        mapView.showsCompass = true
+        mapView.showsScale = true  // Show distance scale when zooming
         mapView.showsTraffic = false
-        mapView.mapType = .standard // .hybrid or .standard
+        mapView.mapType = .standard // .hybrid or .standard - Start as standard
 
-        
+        // Follow, center, and orient in direction of travel/heading
+        mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
+
         return mapView
 
     }
@@ -59,13 +61,22 @@ struct MapView: UIViewRepresentable {
     // Required by UIViewRepresentable protocol
     func updateUIView(_ mapView: MKMapView, context: Context) {
                 
-        // If the follow flag is on, then the user just touched OrientMap.
-        // Set Map to Follow, oriented in facing direction with Radar bloop, set the flag back to false and return
+        // If the OrientMap flag is on, then the user just touched OrientMap.
+        // Set Map to Follow, center map, oriented in facing direction with Radar bloop, zoom to bounding rect, set the flag back to false and return
         if theMap_ViewModel.orientMapFlag {
             theMap_ViewModel.orientMapFlag = false
+            
+            // Follow, center, and orient in direction of travel/heading
             mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
-            mapView.showsUserLocation = true
-            print("updateUIView - Updated Follow Mode")
+//            mapView.showsUserLocation = true
+            
+            // Zoom to bounding rect
+// wdhx continue here            let boundingRect = theMap_ViewModel.getBoundingRect()
+//            mapView.setVisibleMapRect(boundingRect, edgePadding: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20), animated: true)
+//            func setVisibleMapRect(_ mapRect: MKMapRect, edgePadding insets: UIEdgeInsets, animated animate: Bool)
+                        
+           // wdhs
+            print("MapView.updateUIView() - Orient The Map wdhx")
             return
         }
         
@@ -77,8 +88,6 @@ struct MapView: UIViewRepresentable {
             }
         }
         // Now add the parking spot annotation
-//        let allDots = theMap_ViewModel.getMapDotsAs_MKPlacemarkArray()
-//        mapView.addAnnotations(allDots)
         mapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
         
         print("updateUIView() called")
@@ -208,21 +217,7 @@ struct MapView: UIViewRepresentable {
             let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
   
             let dotImage = UIImage(systemName: theMap_ViewModel.getParkingLocationImageName())!.withTintColor(theColor)
-print("WDH X211")
-//            let dotImage = UIImage(systemName:"parkingsign.circle.fill")?.withTintColor(theColor) ??
-//                UIImage(systemName:"parkingsign.circle")?.withTintColor(theColor) ??
-//                UIImage(systemName:"car")?.withTintColor(theColor) ?? // If no parking circle image then use car image
-//                UIImage(systemName:"circle.fill")!.withTintColor(theColor) // This image is always available so default to this.
-            
-//            let dotImage = UIImage(systemName:"car")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"note.text")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"parkingsign")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"parkingsign.circle.fill")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"parkingsign.circle")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"figure.walk")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"figure.stand")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"dot.arrowtriangles.up.right.down.left.circle")?.withTintColor(theColor) ??
-//            let dotImage = UIImage(systemName:"doc.richtext")?.withTintColor(theColor) ??
+
             let size = CGSize(width: dotSize, height: dotSize)
 
             // Create Annotation Image and return it
@@ -252,8 +247,8 @@ print("WDH X211")
         
         // Asks the delegate to provide a cluster annotation object for the specified annotations.
         func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations: [MKAnnotation]) -> MKClusterAnnotation {
-            print("Called: 'func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations: [MKAnnotation]) -> MKClusterAnnotation'")
-            return MKClusterAnnotation(memberAnnotations: clusterAnnotationForMemberAnnotations) // THIS IS WRONG wdhx
+            print("THIS IS WRONG wdh Called: 'func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations: [MKAnnotation]) -> MKClusterAnnotation'")
+            return MKClusterAnnotation(memberAnnotations: clusterAnnotationForMemberAnnotations) // THIS IS WRONG
         }
 
         
