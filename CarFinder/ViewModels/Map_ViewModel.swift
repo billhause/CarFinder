@@ -64,9 +64,27 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     }
     
     // Return a rect that has the current location as the center and the parking spot at the edge
-//wdhx    func getBoundingRect() -> MKMapRect {
-//        mLocationManager.get last known location
-//    }
+    func getBoundingRect() -> MKMapRect {
+        // TODO: Add error handling in case the location manager doesn't have a location yet and returns nil
+        let lastKnownLocation = mLocationManager!.location // CLLocation - Center Point
+        let centerLat = lastKnownLocation!.coordinate.latitude
+        let centerLon = lastKnownLocation!.coordinate.longitude
+        let p1Lat = ParkingSpotEntity.getParkingSpotEntity().lat
+        let p1Lon = ParkingSpotEntity.getParkingSpotEntity().lon
+        let p2Lat = centerLat - (p1Lat-centerLat) // Opposite side
+        let p2Lon = centerLon - (p1Lon-centerLon) // Opposite side
+        
+        let corner1 = MKMapPoint(CLLocationCoordinate2D(latitude: p1Lat, longitude: p1Lon))
+        let corner2 = MKMapPoint(CLLocationCoordinate2D(latitude: p2Lat, longitude: p2Lon))
+        let rect = MKMapRect(x:corner1.x, y:corner1.y, width: corner2.x-corner1.x, height: corner2.y-corner1.y)
+        return rect
+//        // From StackOverflow to create a MKMapRect from two CLLocationCoordinate2D
+//        // Assuming `coordinates` is of type `[CLLocationCoordinate2D]`
+//        let rects = coordinates.lazy.map { MKMapRect(origin: MKMapPoint($0), size: MKMapSize()) }
+//        let fittingRect = rects.reduce(MKMapRect.null) { $0.union($1) }
+//        let boundingMKMapRect = MKMapRectMake(fmin(p1Lat,p2Lat, fmin(p1)))
+        
+    }
     
     // Sometimes the device will not have the first choice symbol so check first
     // Return a default that is always present

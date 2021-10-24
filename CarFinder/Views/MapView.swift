@@ -71,8 +71,9 @@ struct MapView: UIViewRepresentable {
 //            mapView.showsUserLocation = true
             
             // Zoom to bounding rect
-// wdhx continue here            let boundingRect = theMap_ViewModel.getBoundingRect()
+            let boundingRect = theMap_ViewModel.getBoundingRect()
 //            mapView.setVisibleMapRect(boundingRect, edgePadding: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20), animated: true)
+            mapView.setVisibleMapRect(boundingRect, animated: true)
 //            func setVisibleMapRect(_ mapRect: MKMapRect, edgePadding insets: UIEdgeInsets, animated animate: Bool)
                         
            // wdhs
