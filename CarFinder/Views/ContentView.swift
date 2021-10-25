@@ -11,7 +11,7 @@ import CoreData
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-            
+                
     var body: some View {
         NavigationView {
             VStack {

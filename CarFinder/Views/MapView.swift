@@ -31,15 +31,16 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = context.coordinator // Set delegate to the delegate returned by the 'makeCoordinator' function we added to this class
 
         // Region to show
-        let region = theMap_ViewModel.getRegionToShow()
-        mapView.setRegion(region, animated: true)
+//        let region = theMap_ViewModel.getRegionToShow()
+//        mapView.setRegion(region, animated: true)
 
         // Set the region that will be visible showing NYC and Boston
 //        mapView.setVisibleMapRect(route.polyline.boundingMapRect, edgePadding: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20), animated: true)
 
-
         // Initialize Map Settings
-        mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
+        // NOTE Was getting runtime error on iPhone: "Style Z is requested for an invisible rect" to fix
+        //  From Xcode Menu open Product->Scheme->Edit Scheme and select 'Arguments' then add environment variable "OS_ACTIVITY_MODE" with value "disable"
+//        mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
         mapView.showsUserLocation = true // Start map showing the user as a blue dot
 //        mapView.isPitchEnabled = true
 //        mapView.isRotateEnabled = true
@@ -50,7 +51,7 @@ struct MapView: UIViewRepresentable {
         mapView.mapType = .standard // .hybrid or .standard - Start as standard
 
         // Follow, center, and orient in direction of travel/heading
-        mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
+//        mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
 
         return mapView
 
@@ -65,20 +66,23 @@ struct MapView: UIViewRepresentable {
         // Set Map to Follow, center map, oriented in facing direction with Radar bloop, zoom to bounding rect, set the flag back to false and return
         if theMap_ViewModel.orientMapFlag {
             theMap_ViewModel.orientMapFlag = false
-            
-            // Follow, center, and orient in direction of travel/heading
-            mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
-//            mapView.showsUserLocation = true
-            
+
             // Zoom to bounding rect
             let boundingRect = theMap_ViewModel.getBoundingRect()
-//            mapView.setVisibleMapRect(boundingRect, edgePadding: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20), animated: true)
-            mapView.setVisibleMapRect(boundingRect, animated: true)
-//            func setVisibleMapRect(_ mapRect: MKMapRect, edgePadding insets: UIEdgeInsets, animated animate: Bool)
-                        
-           // wdhs
-            print("MapView.updateUIView() - Orient The Map wdhx")
+            mapView.setVisibleMapRect(boundingRect, animated: false)
+
+            // Follow, center, and orient in direction of travel/heading
+            mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: false) // .followWithHeading, .follow, .none
+//            mapView.showsUserLocation = true
+            
             return
+        }
+        
+        // Set Hybrid/Standard mode if it changed
+        if (mapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
+            mapView.mapType = .hybrid
+        } else if (mapView.mapType == .hybrid) && !theMap_ViewModel.isHybrid {
+            mapView.mapType = .standard
         }
         
         // Remove theParking Spot annotation and re-add it in case it moved and triggered this update
@@ -152,6 +156,7 @@ struct MapView: UIViewRepresentable {
         // The specified map view successfully loaded the needed map data.
         func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
             print("Called 'func mapViewDidFinishLoadingMap(_ mapView: MKMapView)'")
+            print("wdh WHICH WAS FIRST 157")
         }
         
         // The specified view was unable to load the map data.
@@ -167,6 +172,7 @@ struct MapView: UIViewRepresentable {
         // The map view has finished rendering all visible tiles.
         func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
             print("Called 'func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: \(fullyRendered))'")
+            print("wdh WHICH WAS FIRST 169") // wdhx
         }
 
         // MARK: Optional - Tracking the User Location
@@ -193,6 +199,7 @@ struct MapView: UIViewRepresentable {
         
         // The user tracking mode changed.
         func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: Bool) {
+            print("wdh MKUserTrackingMode: \(didChange.rawValue)")
             print("Called: 'func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: \(animated)'")
         }
         
@@ -225,12 +232,6 @@ struct MapView: UIViewRepresentable {
             annotationView.image = UIGraphicsImageRenderer(size:size).image {
                 _ in dotImage.draw(in:CGRect(origin:.zero, size:size))
             }
-            
-            // Print all Annotations in the map
-            for annotation in mapView.annotations {
-                print("Annotation: \(annotation.coordinate)")
-            }
-            
             
             return annotationView
         }
