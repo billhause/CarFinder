@@ -15,7 +15,14 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     //   1 - provides data to the view in a way the view can easily consume it
     //   2 - provides 'Intent' functions for the view to change the data
     
+    // MARK: Constants
+    static let MIN_MAP_WIDTH = 25.0
+    static let MIN_MAP_HEIGHT = 150.0
+    
+    // MARK: Member Vars
     @Published private var theMapModel: Map_Model = Map_Model()
+    @Published public var parkingSpotMoved = false // Signal when the parking spot moves so the map knows to move the parking icon
+    
     private var mLocationManager: CLLocationManager?
     
     // Mark: Flag Variables
@@ -66,20 +73,31 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     func getBoundingRect() -> MKMapRect {
         // TODO: Add error handling in case the location manager doesn't have a location yet and returns nil
+
+        // Get current location.  IF none, then use the parking spot location as the current location
+        let parkingLocation = getParkingSpotLocation()
+        var lastKnownLocation = parkingLocation
         
-        let tmpLoc = mLocationManager!.location // CLLocation - Center Point
-        let lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc?.coordinate.latitude)!, longitude: (tmpLoc?.coordinate.longitude)!)
-        let parkingLocation = CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
+        if (mLocationManager != nil) {
+            let tmpLoc = mLocationManager!.location // CLLocation - Center Point
+            lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc?.coordinate.latitude)!, longitude: (tmpLoc?.coordinate.longitude)!)
+        }
+
         let oppositeLocation = CLLocationCoordinate2D(latitude: lastKnownLocation.latitude - (parkingLocation.latitude-lastKnownLocation.latitude),
                                                       longitude: lastKnownLocation.longitude - (parkingLocation.longitude-lastKnownLocation.longitude))
-        
+
         let p1 = MKMapPoint(parkingLocation)
         let p2 = MKMapPoint(oppositeLocation)
         
         let bufferX = abs(p1.x-p2.x) * 0.2 // 20%
         let bufferY = abs(p1.y-p2.y) * 0.2 // 20%
+        let width = max(abs(p1.x-p2.x) + bufferX*2, Self.MIN_MAP_WIDTH)
+        let height = max(abs(p1.y-p2.y)+bufferY*2, Self.MIN_MAP_HEIGHT)
         
-        let rect = MKMapRect.init(x: min(p1.x,p2.x) - bufferX, y: min(p1.y,p2.y)-bufferY, width: abs(p1.x-p2.x) + bufferX*2, height: abs(p1.y-p2.y)+bufferY*2)
+//        print("*** width: \(width), height: \(height)")
+        
+        let rect = MKMapRect.init(x: min(p1.x,p2.x) - bufferX, y: min(p1.y,p2.y)-bufferY, width: width, height: height)
+//print("tmpLoc.lat:\(tmpLoc?.coordinate.latitude), tmpLoc.lon:\(tmpLoc?.coordinate.longitude)")
         return rect
     }
     
@@ -147,6 +165,9 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
             let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element
             ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
             print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
+            
+            // Now that the parking spot has been updated, let the map know to move the marker
+            parkingSpotMoved = true
         }
     }
 
@@ -195,22 +216,16 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         mLocationManager?.requestLocation()
     }
         
-        
+    
     // MARK: Getters
     
-    func getRegionToShow() -> MKCoordinateRegion {
-        // TODO: Return a bounding box centered on the current location and containing the ParkingSpot
-        print("Map_ViewMode.getRegionToShow() called but not implemented yet")
-        let region = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 39.95, longitude: -104.96),
-            span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
-        return region
+    func getParkingSpotLocation() -> CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
     }
-
     
     func getParkingSpot() -> MKPlacemark {
-        let theCoord = CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
-        return MKPlacemark(coordinate: theCoord)
+//        let theCoord = CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
+        return MKPlacemark(coordinate: getParkingSpotLocation())
         // Grandma's House 40.02639828963394, -105.27067477468266
         // Apple Headquarters - latitude: 37.33182, longitude: -122.03118
     }
