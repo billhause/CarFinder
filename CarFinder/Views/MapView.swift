@@ -8,13 +8,15 @@
 import Foundation
 import SwiftUI
 import MapKit
+import UIKit
+import CoreLocation
 
 struct MapView: UIViewRepresentable {
     
     typealias UIViewType = MKMapView
     
     @ObservedObject var theMap_ViewModel: Map_ViewModel
-    
+
     func makeCoordinator() -> MapViewCoordinator {
         // This func is required by the UIViewRepresentable protocol
         // It returns an instance of the class MapViewCoordinator which we also made below
@@ -26,7 +28,7 @@ struct MapView: UIViewRepresentable {
     // Required by UIViewRepresentable protocol
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
-
+        
         // Part of the UIViewRepresentable protocol requirements
         mapView.delegate = context.coordinator // Set delegate to the delegate returned by the 'makeCoordinator' function we added to this class
 
@@ -34,8 +36,6 @@ struct MapView: UIViewRepresentable {
 //        let region = theMap_ViewModel.getRegionToShow()
 //        mapView.setRegion(region, animated: true)
 
-        // Set the region that will be visible showing NYC and Boston
-//        mapView.setVisibleMapRect(route.polyline.boundingMapRect, edgePadding: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20), animated: true)
 
         // Initialize Map Settings
         // NOTE Was getting runtime error on iPhone: "Style Z is requested for an invisible rect" to fix
@@ -55,35 +55,43 @@ struct MapView: UIViewRepresentable {
 
         // Add the parking spot annotation to the map
         mapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
-        theMap_ViewModel.orientMap() // zoom in on the current location and the parking location wdhx
+        theMap_ViewModel.orientMap() // zoom in on the current location and the parking location
+        
+//        //Setup our Map View
+//        theMap_ViewModel.theMapCamera.heading=theMap_ViewModel.getCurrentHeading()
+//        theMap_ViewModel.theMapCamera.centerCoordinate = theMap_ViewModel.getLastKnownLocation()
+//        theMap_ViewModel.theMapCamera.centerCoordinateDistance = 1000
+//        mapView.setCamera(theMap_ViewModel.theMapCamera, animated: true)
+
+        
         
         return mapView
 
     }
     
-// wdhx    Check out this link: https://developer.apple.com/forums/thread/689782
-    
     
     // This gets called when ever the Model changes
     // Required by UIViewRepresentable protocol
     func updateUIView(_ mapView: MKMapView, context: Context) {
-                
+        print("MapView.updateUIView() called")
+
         // If the OrientMap flag is on, then the user just touched OrientMap.
         // Set Map to Follow, center map, oriented in facing direction with Radar bloop, zoom to bounding rect, set the flag back to false and return
-        if theMap_ViewModel.orientMapFlag {
-            theMap_ViewModel.orientMapFlag = false
-
-            // Zoom to bounding rect
-            let boundingRect = theMap_ViewModel.getBoundingRect()
-            mapView.setVisibleMapRect(boundingRect, animated: false)
-
-            // Follow, center, and orient in direction of travel/heading
-//            mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: false) // .followWithHeading, .follow, .none
-//            mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: false) // .followWithHeading, .follow, .none
-//            mapView.showsUserLocation = true
-            
-            return
-        }
+//        if theMap_ViewModel.orientMapFlag {
+//            theMap_ViewModel.orientMapFlag = false
+//print("ZOOM ZOOM ")
+//            // Zoom to bounding rect
+//            let boundingRect = theMap_ViewModel.getBoundingRect()
+////            mapView.setVisibleMapRect(boundingRect, animated: false)
+//
+//            // Follow, center, and orient in direction of travel/heading
+////            mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
+////            mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: false) // .followWithHeading, .follow, .none
+////            mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: false) // .followWithHeading, .follow, .none
+////            mapView.showsUserLocation = true
+//
+////            return
+//        }
         
         // Set Hybrid/Standard mode if it changed
         if (mapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
@@ -106,8 +114,31 @@ struct MapView: UIViewRepresentable {
             print("Updated the Parking Spot in MapView")
         }
         
-        print("updateUIView() called")
+        //Setup our Map View
+
+        // Size and Center the map
+        if theMap_ViewModel.isSizingAndCenteringNeeded() { // The use has hit the orient map button
+            theMap_ViewModel.mapHasBeenResizedAndCentered()
+            // Set the bounding rect to show the current location and the parking spot
+            mapView.setRegion(theMap_ViewModel.getBoundingMKCoordinateRegion(), animated: false) // If animated, this gets overwritten when heading is set
+            
+            // Center the map on the current location
+            mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: false) // If animated, this gets overwritten when heading is set
+
+            print("wdhx MapView.UpdateUIView: Centering Map on Current Location") // wdhx
+        }
+
+        // Set the HEADING
+        mapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
+        
+//        withAnimation { Has No Effect on jumpiness
+//        mapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
+//        }
+
+        
     }
+    
+    
     
 
     
@@ -154,62 +185,65 @@ struct MapView: UIViewRepresentable {
 
         // The map view's visible region changed.
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated: Bool) {
-            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
+//            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
         }
         
         // MARK: Optional - Loading the Map Data
         
         // The specified map view is about to retrieve some map data.
         func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
-            print("Called4 'func mapViewWillStartLoadingMap(_ mapView: MKMapView)'")
+//            print("Called4 'func mapViewWillStartLoadingMap(_ mapView: MKMapView)'")
         }
         
         // The specified map view successfully loaded the needed map data.
         func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
-            print("wdh Finished Loading Map 'func mapViewDidFinishLoadingMap(_ mapView: MKMapView)'")
+//            print("wdh Finished Loading Map 'func mapViewDidFinishLoadingMap(_ mapView: MKMapView)'")
         }
         
         // The specified view was unable to load the map data.
         func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError: Error) {
-            print("Called6 'func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError: Error)'")
+//            print("Called6 'func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError: Error)'")
         }
         
         // The map view is about to start rendering some of its tiles.
         func mapViewWillStartRenderingMap(_ mapView: MKMapView) {
-            print("Called7 'func mapViewWillStartRenderingMap(_ mapView: MKMapView)'")
+//            print("Called7 'func mapViewWillStartRenderingMap(_ mapView: MKMapView)'")
         }
         
         // The map view has finished rendering all visible tiles.
         func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-            print("wdh Finished Rendering Map'func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: \(fullyRendered))'")
+//            print("Called7.5 func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: \(fullyRendered))'")
         }
 
         // MARK: Optional - Tracking the User Location
         
         // The map view will start tracking the user’s position.
         func mapViewWillStartLocatingUser(_ mapView: MKMapView) {
-            print("Called8: 'func mapViewWillStartLocatingUser(_ mapView: MKMapView)'")
+//            print("Called8: 'func mapViewWillStartLocatingUser(_ mapView: MKMapView)'")
         }
         
         // The map view stopped tracking the user’s location.
         func mapViewDidStopLocatingUser(_ mapView: MKMapView) {
-            print("Called9: 'func mapViewDidStopLocatingUser(_ mapView: MKMapView)'")
+//            print("Called9: 'func mapViewDidStopLocatingUser(_ mapView: MKMapView)'")
         }
         
         // The location of the user was updated.
         func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation) {
             print("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
+            // Center the map on the current location
+            mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true) // If animated, this gets overwritten when headingis set
+
         }
         
         // An attempt to locate the user’s position failed.
         func mapView(_ mapView: MKMapView, didFailToLocateUserWithError: Error) {
-            print("Called11: 'func mapView(_ mapView: MKMapView, didFailToLocateUserWithError: Error)'")
+//            print("Called11: 'func mapView(_ mapView: MKMapView, didFailToLocateUserWithError: Error)'")
         }
         
         // The user tracking mode changed.
         func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: Bool) {
             print("wdh MKUserTrackingMode: \(didChange.rawValue)")
-            print("Called12: 'func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: \(animated)'")
+//            print("Called12: 'func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: \(animated)'")
         }
         
         // MARK: Optional - Managing Annotation Views

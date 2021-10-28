@@ -16,12 +16,17 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     //   2 - provides 'Intent' functions for the view to change the data
     
     // MARK: Constants
-    static let MIN_MAP_WIDTH = 25.0
-    static let MIN_MAP_HEIGHT = 150.0
-    
+//    static let MIN_MAP_WIDTH = 25.0 // In MapPoints units
+//    static let MIN_MAP_HEIGHT = 150.0 // In MapPoints units
+    static let MIN_MAP_WIDTH = 100.0 // In MapPoints units
+    static let MIN_MAP_HEIGHT = 600.0 // In MapPoints units
+
     // MARK: Member Vars
     @Published private var theMapModel: Map_Model = Map_Model()
     @Published public var parkingSpotMoved = false // Signal when the parking spot moves so the map knows to move the parking icon
+//    var theMapCamera = MKMapCamera()
+    private var mNeedToOrient = true // Set to true when the map needs to be oriented
+
     
     private var mLocationManager: CLLocationManager?
     
@@ -36,7 +41,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     }
 
     // Flag to signal to the map that the user wants the map re-centered and oriented in his direction
-    var orientMapFlag: Bool {
+    private var orientMapFlag: Bool {
         get {
             return theMapModel.orientMapFlag
         }
@@ -45,6 +50,8 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         }
     }
 
+
+    
     // MARK: Init Functions
     override init() {
         print("Map_ViewModel init() called")
@@ -59,7 +66,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         
         // Save battery by not enabling the UpdateLocation and UpdateHeading??? Not sure
 //        mLocationManager?.startUpdatingLocation() // Will call the delegate's didUpdateLocations function when locaiton changes
-//        mLocationManager?.startUpdatingHeading() // Will call the delegates didUpdateHeading function when heading changes
+        mLocationManager?.startUpdatingHeading() // Will call the delegates didUpdateHeading function when heading changes
         
         // Apps that want to receive location updates when suspended must include the UIBackgroundModes key (with the location value) in their app’s Info.plist
         //mLocationManager?.allowsBackgroundLocationUpdates = true //must include the UIBackgroundModes key in the Info.plist
@@ -67,36 +74,83 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     }
 
     func orientMap() {
-        orientMapFlag = true //  Trigger map update
+        orientMapFlag = true // Trigger map update
+        mNeedToOrient = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
+    }
+
+    // View should call this to inform the ViewModel that the map no longer needs to be oriented
+    func mapHasBeenResizedAndCentered() {
+        mNeedToOrient = false
+    }
+    // View should call this to find out if the map needs to be oriented
+    func isSizingAndCenteringNeeded() -> Bool {
+        return mNeedToOrient
     }
     
     
-    func getBoundingRect() -> MKMapRect {
-        // TODO: Add error handling in case the location manager doesn't have a location yet and returns nil
-
+    
+    func getLastKnownLocation() -> CLLocationCoordinate2D {
         // Get current location.  IF none, then use the parking spot location as the current location
-        let parkingLocation = getParkingSpotLocation()
+        let parkingLocation = getParkingSpotLocation() // Defalt to parking spot location if we don't have a last known location
         var lastKnownLocation = parkingLocation
         
         if (mLocationManager != nil) {
             let tmpLoc = mLocationManager!.location // CLLocation - Center Point
             lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc?.coordinate.latitude)!, longitude: (tmpLoc?.coordinate.longitude)!)
         }
+        return lastKnownLocation
+    }
+    
+    // TODO: delete the getBoundingMKMapRect and make this func calculate the region directly in lat/lon
+    func getBoundingMKCoordinateRegion() -> MKCoordinateRegion {
+        return MKCoordinateRegion(getBoundingMKMapRect())
+    }
+    
+    // Return a MKMapRect which is some sort of Map Coordinate system NOT Lat/Lon
+    func getBoundingMKMapRect() -> MKMapRect {
 
+        // TODO:     NOTE: THIS DOES NOT CENTER THE RECT PROPERLY but it does size correctly. The app is still working because the map centers after setting the rect.
+        
+        print("Map_ViewModel.getBoundingRect() wdhxx")
+        let parkingLocation = getParkingSpotLocation()
+        let lastKnownLocation = getLastKnownLocation()
         let oppositeLocation = CLLocationCoordinate2D(latitude: lastKnownLocation.latitude - (parkingLocation.latitude-lastKnownLocation.latitude),
                                                       longitude: lastKnownLocation.longitude - (parkingLocation.longitude-lastKnownLocation.longitude))
 
         let p1 = MKMapPoint(parkingLocation)
         let p2 = MKMapPoint(oppositeLocation)
+        let top = max(p1.y, p2.y)
+        let bottom = min(p1.y, p2.y)
+        let right = max(p1.x, p2.x)
+        let left = min(p1.x, p2.x)
         
-        let bufferX = abs(p1.x-p2.x) * 0.2 // 20%
-        let bufferY = abs(p1.y-p2.y) * 0.2 // 20%
-        let width = max(abs(p1.x-p2.x) + bufferX*2, Self.MIN_MAP_WIDTH)
-        let height = max(abs(p1.y-p2.y)+bufferY*2, Self.MIN_MAP_HEIGHT)
+        let height = max(top-bottom, Self.MIN_MAP_HEIGHT) * 1.2 // 40% buffer
+        let width = max(right-left, Self.MIN_MAP_WIDTH) * 1.2 // 40% buffer
+//        let bufferX = width * 0.2 // 20%
+//        let bufferY = height * 0.2 // 20%
         
-//        print("*** width: \(width), height: \(height)")
+        // Adjust for buffer
+//        top = top+bufferY
+//        bottom = bottom-bufferY
+//        left = left-bufferX
+//        right = right + bufferX
+
+        let rect = MKMapRect.init(x: left, y: bottom, width: width, height: height)
+
         
-        let rect = MKMapRect.init(x: min(p1.x,p2.x) - bufferX, y: min(p1.y,p2.y)-bufferY, width: width, height: height)
+//        let width = max(abs(p1.x-p2.x), Self.MIN_MAP_WIDTH)
+//        let height = max(abs(p1.y-p2.y), Self.MIN_MAP_HEIGHT)
+//        let bufferX = width * 0.2 // 20%
+//        let bufferY = height * 0.2 // 20%
+
+//        let bufferX = abs(p1.x-p2.x) * 0.2 // 20%
+//        let bufferY = abs(p1.y-p2.y) * 0.2 // 20%
+//        let width = max(abs(p1.x-p2.x) + bufferX*2, Self.MIN_MAP_WIDTH)
+//        let height = max(abs(p1.y-p2.y)+bufferY*2, Self.MIN_MAP_HEIGHT)
+        
+        print("*** width: \(width), height: \(height)")
+        
+//        let rect = MKMapRect.init(x: min(p1.x,p2.x) - bufferX, y: min(p1.y,p2.y)-bufferY, width: width, height: height)
 //print("tmpLoc.lat:\(tmpLoc?.coordinate.latitude), tmpLoc.lon:\(tmpLoc?.coordinate.longitude)")
         return rect
     }
@@ -180,9 +234,12 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
 
     
-//    // Heading - Tells the delegate that the location manager received updated heading information.
-//    // Note: Must have previously called mLocationManager?.startUpdatingHeading() for this to be called
-//    func locationManager(_ locationManager: CLLocationManager, didUpdateHeading: CLHeading) {}
+    // Heading - Tells the delegate that the location manager received updated heading information.
+    // Note: Must have previously called mLocationManager?.startUpdatingHeading() for this to be called
+    func locationManager(_ locationManager: CLLocationManager, didUpdateHeading: CLHeading) {
+//        print("Map_ViewModel.LocaitonManager didUpdateHeading: \(didUpdateHeading)")
+        theMapModel.currentHeading = didUpdateHeading.trueHeading
+    }
 //
 //    // Tells the delegate when the app creates the location manager and when the authorization status changes.
 //    func locationManagerDidChangeAuthorization(_ locationManager: CLLocationManager) {}
@@ -218,16 +275,17 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         
     
     // MARK: Getters
+        
+    func getCurrentHeading() -> Double {
+        return theMapModel.currentHeading
+    }
     
     func getParkingSpotLocation() -> CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
     }
     
     func getParkingSpot() -> MKPlacemark {
-//        let theCoord = CLLocationCoordinate2D(latitude: ParkingSpotEntity.getParkingSpotEntity().lat, longitude: ParkingSpotEntity.getParkingSpotEntity().lon)
         return MKPlacemark(coordinate: getParkingSpotLocation())
-        // Grandma's House 40.02639828963394, -105.27067477468266
-        // Apple Headquarters - latitude: 37.33182, longitude: -122.03118
     }
         
     
