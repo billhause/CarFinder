@@ -10,6 +10,15 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
+
+//Next create a new app library to write a debug file to the app folder
+//https://www.hackingwithswift.com/books/ios-swiftui/writing-data-to-the-documents-directory
+//https://www.hackingwithswift.com/example-code/strings/how-to-save-a-string-to-a-file-on-disk-with-writeto
+
+//Test Logger io.log2phys wdhx
+//https://www.avanderlee.com/workflow/oslog-unified-logging/
+
+
 class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // This class
     //   1 - provides data to the view in a way the view can easily consume it
@@ -95,8 +104,10 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         var lastKnownLocation = parkingLocation
         
         if (mLocationManager != nil) {
-            let tmpLoc = mLocationManager!.location // CLLocation - Center Point
-            lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc?.coordinate.latitude)!, longitude: (tmpLoc?.coordinate.longitude)!)
+            let tmpLoc = mLocationManager!.location // CLLocation - Center Point wdh!
+            if tmpLoc != nil {
+                lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc!.coordinate.latitude), longitude: (tmpLoc!.coordinate.longitude)) // wdh!  
+            }
         }
         return lastKnownLocation
     }
@@ -216,7 +227,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         if theMapModel.updateParkingSpotFlag == true {
             // Update the parking spot location and set the flag back to false
             theMapModel.updateParkingSpotFlag = false
-            let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element
+            let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element wdh!
             ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
             print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
             

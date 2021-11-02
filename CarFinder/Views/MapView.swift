@@ -10,6 +10,8 @@ import SwiftUI
 import MapKit
 import UIKit
 import CoreLocation
+import os
+
 
 struct MapView: UIViewRepresentable {
     
@@ -57,13 +59,7 @@ struct MapView: UIViewRepresentable {
         mapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
         theMap_ViewModel.orientMap() // zoom in on the current location and the parking location
         
-//        //Setup our Map View
-//        theMap_ViewModel.theMapCamera.heading=theMap_ViewModel.getCurrentHeading()
-//        theMap_ViewModel.theMapCamera.centerCoordinate = theMap_ViewModel.getLastKnownLocation()
-//        theMap_ViewModel.theMapCamera.centerCoordinateDistance = 1000
-//        mapView.setCamera(theMap_ViewModel.theMapCamera, animated: true)
-
-        
+//Get NSLog logging working: https://stackoverflow.com/questions/9097424/logging-data-on-device-and-retrieving-the-log
         
         return mapView
 
@@ -267,7 +263,7 @@ struct MapView: UIViewRepresentable {
               
             let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
   
-            let dotImage = UIImage(systemName: theMap_ViewModel.getParkingLocationImageName())!.withTintColor(theColor)
+            let dotImage = UIImage(systemName: theMap_ViewModel.getParkingLocationImageName())!.withTintColor(theColor) // wdh!
 
             let size = CGSize(width: dotSize, height: dotSize)
 

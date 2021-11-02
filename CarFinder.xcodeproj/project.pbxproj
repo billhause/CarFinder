@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2836F254272F058D00D8B894 /* Haptic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2836F253272F058D00D8B894 /* Haptic.swift */; };
 		28AF07F7271B7A090008121D /* CarFinderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AF07F6271B7A090008121D /* CarFinderApp.swift */; };
 		28AF07F9271B7A090008121D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AF07F8271B7A090008121D /* ContentView.swift */; };
 		28AF07FB271B7A0A0008121D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28AF07FA271B7A0A0008121D /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2836F253272F058D00D8B894 /* Haptic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptic.swift; sourceTree = "<group>"; };
 		28AF07F3271B7A090008121D /* CarFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28AF07F6271B7A090008121D /* CarFinderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarFinderApp.swift; sourceTree = "<group>"; };
 		28AF07F8271B7A090008121D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 				28AF07FF271B7A0A0008121D /* Persistence.swift */,
 				28AF0801271B7A0A0008121D /* CarFinder.xcdatamodeld */,
 				28AF07FC271B7A0A0008121D /* Preview Content */,
+				2836F253272F058D00D8B894 /* Haptic.swift */,
 			);
 			path = CarFinder;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				28D28882271B82C70039CB72 /* ParkingSpotEntity.swift in Sources */,
 				28D28888271F51790039CB72 /* MapView.swift in Sources */,
 				28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */,
+				2836F254272F058D00D8B894 /* Haptic.swift in Sources */,
 				28AF0800271B7A0A0008121D /* Persistence.swift in Sources */,
 				28AF07F9271B7A090008121D /* ContentView.swift in Sources */,
 				28D28886271CB8630039CB72 /* Map_Model.swift in Sources */,

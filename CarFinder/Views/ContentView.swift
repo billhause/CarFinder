@@ -11,11 +11,21 @@ import CoreData
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-                
+
+    private func pressMeButtonHandler() { // DELETE THIS NOW
+        print("wdh 'Press Me' button pressed")
+    }
+    
+
+    
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
+                Button(action: pressMeButtonHandler) {
+                    Text("Press Me")
+                }
+
                 MapView(theMap_ViewModel: theMap_ViewModel)
             }
             .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
@@ -31,6 +41,7 @@ struct ContentView: View {
                             .foregroundColor(Color(theColor))
                             .padding() // Move the Parking symbol away from right border a little bit
                     } .font(.largeTitle)
+                    
                 }
                 
                 // Bottom Toolbar
@@ -66,6 +77,8 @@ struct ContentView: View {
         }
     }
     
+    
+
     private func orientMap() {
         withAnimation {
             print("ContentView.orientMap() called")

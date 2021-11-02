@@ -11,6 +11,10 @@ import SwiftUI
 struct CarFinderApp: App {
     let persistenceController = PersistenceController.shared
 
+    init() { // Added by Bill to put any start up code 
+        print("wdh CarFinderApp Default init() called")
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView(theMap_ViewModel: Map_ViewModel())
