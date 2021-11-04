@@ -175,8 +175,9 @@ struct MapView: UIViewRepresentable {
         }
         
         // The map view's visible region changed.
+        var count = 0 // DELETE THIS NOW
         func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)'")
+            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)' \(count)")
         }
 
         // The map view's visible region changed.
@@ -227,7 +228,7 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation) {
             print("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
             // Center the map on the current location
-            mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true) // If animated, this gets overwritten when headingis set
+            mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true)
 
         }
         
@@ -259,7 +260,7 @@ struct MapView: UIViewRepresentable {
 
             annotationView.canShowCallout = true
             
-            let dotSize = 25
+            let dotSize = 35 // Size for Parking Symbol
               
             let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
   

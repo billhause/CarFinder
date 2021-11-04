@@ -14,6 +14,7 @@ struct Map_Model {
     var isHybrid = false       // Track if the hybrid map or the standard map is displayed
     var updateParkingSpotFlag = false // Set to true if the parking spot should be updated
     var currentHeading = 0.0
+        
 //    var currentLocation = CLLocationCoordinate2D(latitude: CLLocationDegrees(40.0), longitude: CLLocationDegrees(-105.0))
     // The parking location is stored in CoreData ParkingSpotEntity
 }

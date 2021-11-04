@@ -36,8 +36,8 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
 //    var theMapCamera = MKMapCamera()
     private var mNeedToOrient = true // Set to true when the map needs to be oriented
 
-    
     private var mLocationManager: CLLocationManager?
+    
     
     // Mark: Flag Variables
     var isHybrid: Bool { // Expose this so the View can modify it indirectily through the ViewModel
