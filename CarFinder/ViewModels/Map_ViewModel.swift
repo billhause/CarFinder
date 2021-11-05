@@ -27,12 +27,14 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // MARK: Constants
 //    static let MIN_MAP_WIDTH = 25.0 // In MapPoints units
 //    static let MIN_MAP_HEIGHT = 150.0 // In MapPoints units
-    static let MIN_MAP_WIDTH = 100.0 // In MapPoints units
-    static let MIN_MAP_HEIGHT = 600.0 // In MapPoints units
+//    static let MIN_MAP_WIDTH = 100.0 // In MapPoints units
+//    static let MIN_MAP_HEIGHT = 600.0 // In MapPoints units
 
     // MARK: Member Vars
     @Published private var theMapModel: Map_Model = Map_Model()
     @Published public var parkingSpotMoved = false // Signal when the parking spot moves so the map knows to move the parking icon
+    @Published public var theDistance = 123
+    
 //    var theMapCamera = MKMapCamera()
     private var mNeedToOrient = true // Set to true when the map needs to be oriented
 
@@ -74,7 +76,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         mLocationManager?.delegate = self
         
         // Save battery by not enabling the UpdateLocation and UpdateHeading??? Not sure
-//        mLocationManager?.startUpdatingLocation() // Will call the delegate's didUpdateLocations function when locaiton changes
+        mLocationManager?.startUpdatingLocation() // Will call the delegate's didUpdateLocations function when locaiton changes
         mLocationManager?.startUpdatingHeading() // Will call the delegates didUpdateHeading function when heading changes
         
         // Apps that want to receive location updates when suspended must include the UIBackgroundModes key (with the location value) in their app’s Info.plist
@@ -132,7 +134,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         let dx = Double(parkLoc.x-centLoc.x)
         let dy = Double(parkLoc.y-centLoc.y)
         var distance = pow((pow(dx,2) + pow(dy,2)), 0.5) // square root of A Squared plus B Squard
-        distance = distance * 1.1 // Add 20% buffer around the map
+        distance = distance * 1.1 // Add buffer around the map so the parking location stays on the map
         
         // The Left and Right sides will be the center +/- the distance between the points
         let left = centLoc.y - distance
@@ -147,35 +149,6 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         return theMKCoordinateRegion
     }
 
-//    // Return a MKMapRect which is some sort of Map Coordinate system NOT Lat/Lon
-//    func getBoundingMKMapRect() -> MKMapRect {
-//
-//        // TODO:     NOTE: THIS DOES NOT CENTER THE RECT PROPERLY but it does size correctly. The app is still working because the map centers after setting the rect.
-//
-//        print("Map_ViewModel.getBoundingRect() wdhxx")
-//        let parkingLocation = getParkingSpotLocation()
-//        let lastKnownLocation = getLastKnownLocation()
-//        let oppositeLocation = CLLocationCoordinate2D(latitude: lastKnownLocation.latitude - (parkingLocation.latitude-lastKnownLocation.latitude),
-//                                                      longitude: lastKnownLocation.longitude - (parkingLocation.longitude-lastKnownLocation.longitude))
-//
-//        let p1 = MKMapPoint(parkingLocation)
-//        let p2 = MKMapPoint(oppositeLocation)
-//        let top = max(p1.y, p2.y)
-//        let bottom = min(p1.y, p2.y)
-//        let right = max(p1.x, p2.x)
-//        let left = min(p1.x, p2.x)
-//
-//        let height = max(top-bottom, Self.MIN_MAP_HEIGHT) * 1.4 // 40% buffer
-//        let width = max(right-left, Self.MIN_MAP_WIDTH) * 1.4 // 40% buffer
-//
-//        let rect = MKMapRect.init(x: left, y: bottom, width: width, height: height)
-//
-//        print("*** width: \(width), height: \(height)")
-//
-//        return rect
-//    }
-//
-    
     
     // Sometimes the device will not have the first choice symbol so check first
     // Return a default that is always present
@@ -231,20 +204,36 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // REQUIRED - Tells the delegate that new location data is available.
     // The MOST RECENT location is the last one in the array
     func locationManager(_ locationManager: CLLocationManager, didUpdateLocations: [CLLocation]) {
-        print("**Called: locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation]), updateParkingSpotFlag=\(theMapModel.updateParkingSpotFlag)")
+        print("Called: Map_ViewModel.locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation])")
         
+        let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element wdh!
+
         if theMapModel.updateParkingSpotFlag == true {
             // Update the parking spot location and set the flag back to false
             theMapModel.updateParkingSpotFlag = false
-            let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element wdh!
             ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
             print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
             
             // Now that the parking spot has been updated, let the map know to move the marker
             parkingSpotMoved = true
         }
+        
+        // Update the distance
+        let parkingSpot = getParkingSpotLocation()
+        theDistance = getDistanceInFeet(p1: parkingSpot, p2: currentLocation)
     }
 
+    func getDistanceInFeet(p1: CLLocationCoordinate2D, p2: CLLocationCoordinate2D) -> Int {
+        // Calculate Distance
+        
+        let source = CLLocation(latitude: p1.latitude, longitude: p1.longitude)
+        let destination = CLLocation(latitude: p2.latitude, longitude: p2.longitude)
+        
+        let distanceInMeters = source.distance(from: destination)
+        let distanceInFeet = Int(distanceInMeters * 3.28084)
+        return distanceInFeet
+    }
+    
     // REQUIRED
     // This must be implemented or you'll get a runtime error when requesting a map location update
     // Tells the delegate that the location manager was unable to retrieve a location value.

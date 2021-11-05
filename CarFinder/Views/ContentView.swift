@@ -29,7 +29,7 @@ struct ContentView: View {
                     Spacer()
                 }
                 // ^^^^^^^^^ ALERT MESSAGE ^^^^^^^^^^^^^
-                
+                Text("Distance: \(theMap_ViewModel.theDistance) feet")
                 MapView(theMap_ViewModel: theMap_ViewModel)
             }
             .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
@@ -41,7 +41,7 @@ struct ContentView: View {
                     Button(action: updateParkingSpot) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
                         let imageString = theMap_ViewModel.getParkingLocationImageName()
-                        Label("Update Spot", systemImage: imageString)
+                        Label("Save Spot", systemImage: imageString)
                             .foregroundColor(Color(theColor))
                             .padding() // Move the Parking symbol away from right border a little bit
                     } .font(.largeTitle)

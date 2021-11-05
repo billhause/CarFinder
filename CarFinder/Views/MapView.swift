@@ -47,7 +47,7 @@ struct MapView: UIViewRepresentable {
 //        mapView.isPitchEnabled = true
 //        mapView.isRotateEnabled = true
 //        mapView.showsBuildings = true
-//        mapView.showsCompass = true
+        mapView.showsCompass = false
         mapView.showsScale = true  // Show distance scale when zooming
         mapView.showsTraffic = false
         mapView.mapType = .standard // .hybrid or .standard - Start as standard
@@ -59,8 +59,6 @@ struct MapView: UIViewRepresentable {
         mapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
         theMap_ViewModel.orientMap() // zoom in on the current location and the parking location
         
-//Get NSLog logging working: https://stackoverflow.com/questions/9097424/logging-data-on-device-and-retrieving-the-log
-        
         return mapView
 
     }
@@ -70,24 +68,6 @@ struct MapView: UIViewRepresentable {
     // Required by UIViewRepresentable protocol
     func updateUIView(_ mapView: MKMapView, context: Context) {
         print("MapView.updateUIView() called")
-
-        // If the OrientMap flag is on, then the user just touched OrientMap.
-        // Set Map to Follow, center map, oriented in facing direction with Radar bloop, zoom to bounding rect, set the flag back to false and return
-//        if theMap_ViewModel.orientMapFlag {
-//            theMap_ViewModel.orientMapFlag = false
-//print("ZOOM ZOOM ")
-//            // Zoom to bounding rect
-//            let boundingRect = theMap_ViewModel.getBoundingRect()
-////            mapView.setVisibleMapRect(boundingRect, animated: false)
-//
-//            // Follow, center, and orient in direction of travel/heading
-////            mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
-////            mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: false) // .followWithHeading, .follow, .none
-////            mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: false) // .followWithHeading, .follow, .none
-////            mapView.showsUserLocation = true
-//
-////            return
-//        }
         
         // Set Hybrid/Standard mode if it changed
         if (mapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
