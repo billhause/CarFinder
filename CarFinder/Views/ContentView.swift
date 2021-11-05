@@ -29,24 +29,35 @@ struct ContentView: View {
                     Spacer()
                 }
                 // ^^^^^^^^^ ALERT MESSAGE ^^^^^^^^^^^^^
-                Text("Distance: \(theMap_ViewModel.theDistance) feet")
-                MapView(theMap_ViewModel: theMap_ViewModel)
-            }
-            .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
-//            .navigationBarHidden(false)
-
-            .toolbar {
-                
-                ToolbarItem(placement: ToolbarItemPlacement.automatic) { // Top Toolbar
+                HStack {
+                    Spacer()
+                    Text("Distance: \(theMap_ViewModel.theDistance) feet")
+                    Spacer()
+                    Spacer()
                     Button(action: updateParkingSpot) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
                         let imageString = theMap_ViewModel.getParkingLocationImageName()
-                        Label("Save Spot", systemImage: imageString)
+                        Label("", systemImage: imageString)
                             .foregroundColor(Color(theColor))
                             .padding() // Move the Parking symbol away from right border a little bit
                     } .font(.largeTitle)
-                    
                 }
+                MapView(theMap_ViewModel: theMap_ViewModel)
+            }
+//            .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
+            .navigationBarHidden(true)
+
+            .toolbar {
+                
+//                ToolbarItem(placement: ToolbarItemPlacement.automatic) { // Top Toolbar
+//                    Button(action: updateParkingSpot) {
+//                        let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
+//                        let imageString = theMap_ViewModel.getParkingLocationImageName()
+//                        Label("Save Spot", systemImage: imageString)
+//                            .foregroundColor(Color(theColor))
+//                            .padding() // Move the Parking symbol away from right border a little bit
+//                    } .font(.largeTitle)
+//                }
                 
                 // Bottom Toolbar
                 ToolbarItemGroup(placement: .bottomBar) {

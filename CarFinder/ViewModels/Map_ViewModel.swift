@@ -230,7 +230,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         let destination = CLLocation(latitude: p2.latitude, longitude: p2.longitude)
         
         let distanceInMeters = source.distance(from: destination)
-        let distanceInFeet = Int(distanceInMeters * 3.28084)
+        let distanceInFeet = Int(distanceInMeters * 3.28084) // Convert 
         return distanceInFeet
     }
     
