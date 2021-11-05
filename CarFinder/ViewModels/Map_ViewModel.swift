@@ -106,66 +106,75 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         if (mLocationManager != nil) {
             let tmpLoc = mLocationManager!.location // CLLocation - Center Point wdh!
             if tmpLoc != nil {
-                lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc!.coordinate.latitude), longitude: (tmpLoc!.coordinate.longitude)) // wdh!  
+                lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc!.coordinate.latitude), longitude: (tmpLoc!.coordinate.longitude))
             }
         }
         return lastKnownLocation
     }
     
-    // TODO: delete the getBoundingMKMapRect and make this func calculate the region directly in lat/lon
-    func getBoundingMKCoordinateRegion() -> MKCoordinateRegion {
-        return MKCoordinateRegion(getBoundingMKMapRect())
-    }
-    
-    // Return a MKMapRect which is some sort of Map Coordinate system NOT Lat/Lon
-    func getBoundingMKMapRect() -> MKMapRect {
+//    // TODO: delete the getBoundingMKMapRect and make this func calculate the region directly in lat/lon
+//    func getBoundingMKCoordinateRegion2() -> MKCoordinateRegion {
+//        return MKCoordinateRegion(getBoundingMKMapRect())
+//    }
 
-        // TODO:     NOTE: THIS DOES NOT CENTER THE RECT PROPERLY but it does size correctly. The app is still working because the map centers after setting the rect.
-        
-        print("Map_ViewModel.getBoundingRect() wdhxx")
+    // Find the distance between the parking spot and the current location.
+    // Make the map width/height be double that distance minus some buffer percentage
+    // make sure the center stays in the center after subtracting the buffer
+    func getBoundingMKCoordinateRegion() -> MKCoordinateRegion {
         let parkingLocation = getParkingSpotLocation()
         let lastKnownLocation = getLastKnownLocation()
-        let oppositeLocation = CLLocationCoordinate2D(latitude: lastKnownLocation.latitude - (parkingLocation.latitude-lastKnownLocation.latitude),
-                                                      longitude: lastKnownLocation.longitude - (parkingLocation.longitude-lastKnownLocation.longitude))
 
-        let p1 = MKMapPoint(parkingLocation)
-        let p2 = MKMapPoint(oppositeLocation)
-        let top = max(p1.y, p2.y)
-        let bottom = min(p1.y, p2.y)
-        let right = max(p1.x, p2.x)
-        let left = min(p1.x, p2.x)
-        
-        let height = max(top-bottom, Self.MIN_MAP_HEIGHT) * 1.2 // 40% buffer
-        let width = max(right-left, Self.MIN_MAP_WIDTH) * 1.2 // 40% buffer
-//        let bufferX = width * 0.2 // 20%
-//        let bufferY = height * 0.2 // 20%
-        
-        // Adjust for buffer
-//        top = top+bufferY
-//        bottom = bottom-bufferY
-//        left = left-bufferX
-//        right = right + bufferX
+        // Convert from lat/lon to points so we can do distance math
+        let parkLoc = MKMapPoint(parkingLocation)
+        let centLoc = MKMapPoint(lastKnownLocation)
 
-        let rect = MKMapRect.init(x: left, y: bottom, width: width, height: height)
-
+        // Pathagorean Theorem to find distance
+        let dx = Double(parkLoc.x-centLoc.x)
+        let dy = Double(parkLoc.y-centLoc.y)
+        var distance = pow((pow(dx,2) + pow(dy,2)), 0.5) // square root of A Squared plus B Squard
+        distance = distance * 1.1 // Add 20% buffer around the map
         
-//        let width = max(abs(p1.x-p2.x), Self.MIN_MAP_WIDTH)
-//        let height = max(abs(p1.y-p2.y), Self.MIN_MAP_HEIGHT)
-//        let bufferX = width * 0.2 // 20%
-//        let bufferY = height * 0.2 // 20%
-
-//        let bufferX = abs(p1.x-p2.x) * 0.2 // 20%
-//        let bufferY = abs(p1.y-p2.y) * 0.2 // 20%
-//        let width = max(abs(p1.x-p2.x) + bufferX*2, Self.MIN_MAP_WIDTH)
-//        let height = max(abs(p1.y-p2.y)+bufferY*2, Self.MIN_MAP_HEIGHT)
+        // The Left and Right sides will be the center +/- the distance between the points
+        let left = centLoc.y - distance
+//        let right = centLoc.x + distance
+        let bottom = centLoc.y - distance
+//        let top = centLoc.y + distance
+        let width = distance * 2
+        let height = distance * 2
         
-        print("*** width: \(width), height: \(height)")
-        
-//        let rect = MKMapRect.init(x: min(p1.x,p2.x) - bufferX, y: min(p1.y,p2.y)-bufferY, width: width, height: height)
-//print("tmpLoc.lat:\(tmpLoc?.coordinate.latitude), tmpLoc.lon:\(tmpLoc?.coordinate.longitude)")
-        return rect
+        let theMKMapRect = MKMapRect.init(x: left, y: bottom, width: width, height: height) // Lower Left origin
+        let theMKCoordinateRegion = MKCoordinateRegion(theMKMapRect)
+        return theMKCoordinateRegion
     }
-    
+
+//    // Return a MKMapRect which is some sort of Map Coordinate system NOT Lat/Lon
+//    func getBoundingMKMapRect() -> MKMapRect {
+//
+//        // TODO:     NOTE: THIS DOES NOT CENTER THE RECT PROPERLY but it does size correctly. The app is still working because the map centers after setting the rect.
+//
+//        print("Map_ViewModel.getBoundingRect() wdhxx")
+//        let parkingLocation = getParkingSpotLocation()
+//        let lastKnownLocation = getLastKnownLocation()
+//        let oppositeLocation = CLLocationCoordinate2D(latitude: lastKnownLocation.latitude - (parkingLocation.latitude-lastKnownLocation.latitude),
+//                                                      longitude: lastKnownLocation.longitude - (parkingLocation.longitude-lastKnownLocation.longitude))
+//
+//        let p1 = MKMapPoint(parkingLocation)
+//        let p2 = MKMapPoint(oppositeLocation)
+//        let top = max(p1.y, p2.y)
+//        let bottom = min(p1.y, p2.y)
+//        let right = max(p1.x, p2.x)
+//        let left = min(p1.x, p2.x)
+//
+//        let height = max(top-bottom, Self.MIN_MAP_HEIGHT) * 1.4 // 40% buffer
+//        let width = max(right-left, Self.MIN_MAP_WIDTH) * 1.4 // 40% buffer
+//
+//        let rect = MKMapRect.init(x: left, y: bottom, width: width, height: height)
+//
+//        print("*** width: \(width), height: \(height)")
+//
+//        return rect
+//    }
+//
     
     
     // Sometimes the device will not have the first choice symbol so check first

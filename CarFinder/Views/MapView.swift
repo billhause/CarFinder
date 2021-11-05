@@ -175,9 +175,8 @@ struct MapView: UIViewRepresentable {
         }
         
         // The map view's visible region changed.
-        var count = 0 // DELETE THIS NOW
         func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)' \(count)")
+            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)'")
         }
 
         // The map view's visible region changed.
