@@ -51,6 +51,7 @@ struct MapView: UIViewRepresentable {
         mapView.showsScale = true  // Show distance scale when zooming
         mapView.showsTraffic = false
         mapView.mapType = .standard // .hybrid or .standard - Start as standard
+        mapView.gestureRecognizers
 
         // Follow, center, and orient in direction of travel/heading
 //        mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
@@ -94,7 +95,11 @@ struct MapView: UIViewRepresentable {
 
         // Size and Center the map
         if theMap_ViewModel.isSizingAndCenteringNeeded() { // The use has hit the orient map button
+            
             theMap_ViewModel.mapHasBeenResizedAndCentered()
+            
+            theMap_ViewModel.startCenteringMap() // Set flag to continue to keep the map centered on the current location
+            
             // Set the bounding rect to show the current location and the parking spot
             mapView.setRegion(theMap_ViewModel.getBoundingMKCoordinateRegion(), animated: false) // If animated, this gets overwritten when heading is set
             
@@ -114,10 +119,7 @@ struct MapView: UIViewRepresentable {
         
     }
     
-    
-    
-
-    
+//    Make map so that user can't drag map or rotate map manually
     
     // Delegate created by Bill to handle various call-backs from the MapView class.
     // This handles things like
@@ -144,6 +146,7 @@ struct MapView: UIViewRepresentable {
             return renderer
         }
         
+        
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         // VVVVVVV Optional MKMapViewDelegate protocol functions that I added for demo/testing purposes VVVVV
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -161,7 +164,7 @@ struct MapView: UIViewRepresentable {
 
         // The map view's visible region changed.
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated: Bool) {
-//            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
+            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
         }
         
         // MARK: Optional - Loading the Map Data
@@ -207,7 +210,9 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation) {
             print("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
             // Center the map on the current location
-            mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true)
+            if theMap_ViewModel.shouldKeepMapCentered() { // Only do this if the user wants the map to stay centered
+                mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true)
+            }
 
         }
         

@@ -12,7 +12,7 @@ import os.log
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-    @ObservedObject var theAlert = AlertDialog.shared
+    @ObservedObject var theAlert = AlertDialog.shared // Alert
     
     var body: some View {
         NavigationView {
@@ -31,7 +31,7 @@ struct ContentView: View {
                 // ^^^^^^^^^ ALERT MESSAGE ^^^^^^^^^^^^^
                 HStack {
                     Spacer()
-                    Text("Distance: \(theMap_ViewModel.theDistance) feet")
+                    Text("Distance: \(theMap_ViewModel.theDistance) Feet")
                     Spacer()
                     Spacer()
                     Button(action: updateParkingSpot) {
@@ -43,7 +43,12 @@ struct ContentView: View {
                     } .font(.largeTitle)
                 }
                 MapView(theMap_ViewModel: theMap_ViewModel)
-            }
+//                    .gesture(TapGesture()
+//                                .onEnded({
+//                        print("Tapped! wdhx")
+//                    }))
+            } // VStack
+
 //            .navigationBarTitle("Car Locator", displayMode: .inline) // inline moves the title to the same line as the buttons
             .navigationBarHidden(true)
 

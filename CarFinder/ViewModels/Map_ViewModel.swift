@@ -230,7 +230,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         let destination = CLLocation(latitude: p2.latitude, longitude: p2.longitude)
         
         let distanceInMeters = source.distance(from: destination)
-        let distanceInFeet = Int(distanceInMeters * 3.28084) // Convert 
+        let distanceInFeet = Int(distanceInMeters * 3.28084) // Convert to Feet
         return distanceInFeet
     }
     
@@ -282,6 +282,19 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         mLocationManager?.requestLocation()
     }
         
+    func stopCenteringMap() {
+        // Call this when the user is manipulating the map by hand to stop the map from recentering
+        theMapModel.keepMapCentered = false
+    }
+    func startCenteringMap() {
+        // Call this if the user wants the map to stay centered on the current location
+        theMapModel.keepMapCentered = true
+    }
+    func shouldKeepMapCentered() -> Bool {
+        // This tells the caller if the map should be centered or not
+        return theMapModel.keepMapCentered
+    }
+    
     
     // MARK: Getters
         
