@@ -12,46 +12,46 @@ import UIKit
 import CoreLocation
 import os
 
+// ======= Adding Touch Detection =======
+// https://stackoverflow.com/questions/63110673/tapping-an-mkmapview-in-swiftui
+// Code marked with TouchDetect
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 struct MapView: UIViewRepresentable {
     
     typealias UIViewType = MKMapView
     
     @ObservedObject var theMap_ViewModel: Map_ViewModel
-
+    let mapView = MKMapView() // TouchDetect - made member var instead of local var in makeUIView
+    
+    
     func makeCoordinator() -> MapViewCoordinator {
         // This func is required by the UIViewRepresentable protocol
         // It returns an instance of the class MapViewCoordinator which we also made below
         // MapViewCoordinator implements the MKMapViewDelegate protocol and has a method to return
         // a renderer for the polyline layer
-        return MapViewCoordinator(theMap_ViewModel)
+        return MapViewCoordinator(self, theMapVM: theMap_ViewModel) // Pass in the view model so that the delegate has access to it
     }
     
     // Required by UIViewRepresentable protocol
     func makeUIView(context: Context) -> MKMapView {
-        let mapView = MKMapView()
+//        let mapView = MKMapView()
         
         // Part of the UIViewRepresentable protocol requirements
         mapView.delegate = context.coordinator // Set delegate to the delegate returned by the 'makeCoordinator' function we added to this class
-
-        // Region to show
-//        let region = theMap_ViewModel.getRegionToShow()
-//        mapView.setRegion(region, animated: true)
-
 
         // Initialize Map Settings
         // NOTE Was getting runtime error on iPhone: "Style Z is requested for an invisible rect" to fix
         //  From Xcode Menu open Product->Scheme->Edit Scheme and select 'Arguments' then add environment variable "OS_ACTIVITY_MODE" with value "disable"
 //        mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
-        mapView.showsUserLocation = true // Start map showing the user as a blue dot
 //        mapView.isPitchEnabled = true
 //        mapView.isRotateEnabled = true
 //        mapView.showsBuildings = true
+        mapView.showsUserLocation = true // Start map showing the user as a blue dot
         mapView.showsCompass = false
         mapView.showsScale = true  // Show distance scale when zooming
         mapView.showsTraffic = false
         mapView.mapType = .standard // .hybrid or .standard - Start as standard
-        mapView.gestureRecognizers
 
         // Follow, center, and orient in direction of travel/heading
 //        mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
@@ -106,7 +106,7 @@ struct MapView: UIViewRepresentable {
             // Center the map on the current location
             mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: false) // If animated, this gets overwritten when heading is set
 
-            print("wdhx MapView.UpdateUIView: Centering Map on Current Location") // wdhx
+            print("wdh MapView.UpdateUIView: Centering Map on Current Location")
         }
 
         // Set the HEADING
@@ -128,14 +128,30 @@ struct MapView: UIViewRepresentable {
     //   - Draging and Selecting Annotations
     //   - Respond to map position changes etc.
     // This class is defined INSIDE the MapView Struct
-    class MapViewCoordinator: NSObject, MKMapViewDelegate {
+    class MapViewCoordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate { // TouchDetect: added Gesture Delegate protocol
         var theMap_ViewModel: Map_ViewModel
+        var parent: MapView // TouchDetect - We'll need to reference the MapView object
+        var gRecognizer = UITapGestureRecognizer() // TouchDetect
         
         // We need an init so we can pass in the Map_ViewModel class
-        init(_ theMapVM: Map_ViewModel) {
+        // TODO: Instead of passing the parent struct MapView object, just pass the parent's class mapView since that's all we need and it's a class to no copies are made
+        init(_ parent: MapView, theMapVM: Map_ViewModel) { // Pass MapView for TouchDetect
             theMap_ViewModel = theMapVM
+            self.parent = parent // TouchDetect will need to reference this
+            super.init()
+            // wdhx continue here
+            self.gRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler)) // TouchDetect
+            self.gRecognizer.delegate = self // TouchDetect
+            self.parent.mapView.addGestureRecognizer(gRecognizer)
         }
         
+        @objc func tapHandler(_gesture: UITapGestureRecognizer) {
+            // Position on the screen, CGPoint
+            let location = gRecognizer.location(in: self.parent.mapView)
+            // postion on map, CLLocationCoordinate2D
+            let coordinate = self.parent.mapView.convert(location, toCoordinateFrom: self.parent.mapView)
+            print("LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
+        }
         
         // Added to render the PolyLine Overlay to draw the route between two points
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
