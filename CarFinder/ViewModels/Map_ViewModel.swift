@@ -201,10 +201,10 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     // MARK: CLLocationManagerDelegate Functions
 
-    // REQUIRED - Tells the delegate that new location data is available.
+    // REQUIRED - Called EVERY TIME the location data is updated
     // The MOST RECENT location is the last one in the array
     func locationManager(_ locationManager: CLLocationManager, didUpdateLocations: [CLLocation]) {
-        print("Called: Map_ViewModel.locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation])")
+//        print("Called: Map_ViewModel.locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation])")
         
         let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element wdh!
 

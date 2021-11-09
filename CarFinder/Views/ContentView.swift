@@ -43,6 +43,11 @@ struct ContentView: View {
                     } .font(.largeTitle)
                 }
                 MapView(theMap_ViewModel: theMap_ViewModel)
+//                    .gesture(
+//                        DragGesture()
+//                            .onChanged({ value in print("DragGesture.onChanged: \(value)") })
+//                            .onEnded({ _ in print("End")})
+//                    )
 //                    .gesture(TapGesture()
 //                                .onEnded({
 //                        print("Tapped! wdhx")

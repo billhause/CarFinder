@@ -15,6 +15,8 @@ import os
 // ======= Adding Touch Detection =======
 // https://stackoverflow.com/questions/63110673/tapping-an-mkmapview-in-swiftui
 // Code marked with TouchDetect
+// Note the sample code passes the init a struct copy of the parent but only needs to pass a reference to the class mapView
+//
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 struct MapView: UIViewRepresentable {
@@ -30,7 +32,7 @@ struct MapView: UIViewRepresentable {
         // It returns an instance of the class MapViewCoordinator which we also made below
         // MapViewCoordinator implements the MKMapViewDelegate protocol and has a method to return
         // a renderer for the polyline layer
-        return MapViewCoordinator(self, theMapVM: theMap_ViewModel) // Pass in the view model so that the delegate has access to it
+        return MapViewCoordinator(mapView, theMapVM: theMap_ViewModel) // Pass in the view model so that the delegate has access to it
     }
     
     // Required by UIViewRepresentable protocol
@@ -68,7 +70,7 @@ struct MapView: UIViewRepresentable {
     // This gets called when ever the Model changes
     // Required by UIViewRepresentable protocol
     func updateUIView(_ mapView: MKMapView, context: Context) {
-        print("MapView.updateUIView() called")
+//        print("MapView.updateUIView() called")
         
         // Set Hybrid/Standard mode if it changed
         if (mapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
@@ -130,28 +132,66 @@ struct MapView: UIViewRepresentable {
     // This class is defined INSIDE the MapView Struct
     class MapViewCoordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate { // TouchDetect: added Gesture Delegate protocol
         var theMap_ViewModel: Map_ViewModel
-        var parent: MapView // TouchDetect - We'll need to reference the MapView object
-        var gRecognizer = UITapGestureRecognizer() // TouchDetect
-        
+        var mapView: MKMapView
+        var mTapGestureRecognizer = UITapGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
+        var mPinchGestureRecognizer = UIPinchGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
+//        var mPanGestureRecognizer = UIPanGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
+
         // We need an init so we can pass in the Map_ViewModel class
-        // TODO: Instead of passing the parent struct MapView object, just pass the parent's class mapView since that's all we need and it's a class to no copies are made
-        init(_ parent: MapView, theMapVM: Map_ViewModel) { // Pass MapView for TouchDetect
+
+        init(_ theMKMapView: MKMapView, theMapVM: Map_ViewModel) { // Pass MKMapView for TouchDetect to convert pixels to lat/lon
             theMap_ViewModel = theMapVM
-            self.parent = parent // TouchDetect will need to reference this
+            self.mapView = theMKMapView // TouchDetect will need to reference this
             super.init()
-            // wdhx continue here
-            self.gRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler)) // TouchDetect
-            self.gRecognizer.delegate = self // TouchDetect
-            self.parent.mapView.addGestureRecognizer(gRecognizer)
+
+            self.mapView.isUserInteractionEnabled = true
+                        
+            let thePanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panHandler(_:))) // TouchDetect
+            thePanGestureRecognizer.delegate = self // TouchDetect
+            thePanGestureRecognizer.minimumNumberOfTouches = 1
+            thePanGestureRecognizer.maximumNumberOfTouches = 1
+            self.mapView.addGestureRecognizer(thePanGestureRecognizer) // TouchDetect
+            self.mapView.isUserInteractionEnabled = true
+
+            self.mTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler)) // TouchDetect
+            self.mTapGestureRecognizer.delegate = self // TouchDetect
+            self.mapView.addGestureRecognizer(mTapGestureRecognizer) // TouchDetect
+
+            self.mPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(pinchHandler)) // TouchDetect
+            self.mPinchGestureRecognizer.delegate = self // TouchDetect
+            self.mapView.addGestureRecognizer(mPinchGestureRecognizer) // TouchDetect
+
         }
-        
-        @objc func tapHandler(_gesture: UITapGestureRecognizer) {
+
+        // MARK: GestureRecognizer Delegate callback functions
+        // GestureRecognizer Delegate function (optional)
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool { // TouchDetect - Called after every gesture starts
+            print("wdh001 gestureRecognizerShouldBegin")
+            return true
+        }
+
+        // MARK: Custom GestureRecognizer Handler functions that I created
+        @objc func tapHandler(_ sender: UITapGestureRecognizer) { // TouchDetect: detect single tap and convert to lat/lon
+            print("wdh003 @objc tapHandler called")
+            if sender.state != .ended {
+                return // Only need to process at the end of the gesture
+            }
+                
             // Position on the screen, CGPoint
-            let location = gRecognizer.location(in: self.parent.mapView)
+            let location = mTapGestureRecognizer.location(in: mapView)
             // postion on map, CLLocationCoordinate2D
-            let coordinate = self.parent.mapView.convert(location, toCoordinateFrom: self.parent.mapView)
+            let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
             print("LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
         }
+
+        // NOTE: FOR SOME REASON the panHandler and pinchHandler call-backs don't ever get called
+        @objc func panHandler(_ sender: UIPanGestureRecognizer) { // TouchDetect
+            print("panHandler Called in MapViewCoordinator class")
+        }
+        @objc func pinchHandler(_ sender: UIPinchGestureRecognizer) { // TouchDetect: detect pinch
+            print("pinchHandler Called in MapViewCoordinator class")
+        }
+
         
         // Added to render the PolyLine Overlay to draw the route between two points
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -170,17 +210,17 @@ struct MapView: UIViewRepresentable {
         // MARK: Optional - Responding to Map Position Changes
         // The region displayed by the map view is about to change.
         func mapView(_ mapView: MKMapView, regionWillChangeAnimated: Bool) {
-            print("Called1 'func mapView(_ mapView: MKMapView, regionWillChangeAnimated: \(regionWillChangeAnimated))'")
+//            print("Called1 'func mapView(_ mapView: MKMapView, regionWillChangeAnimated: \(regionWillChangeAnimated))'")
         }
         
         // The map view's visible region changed.
         func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)'")
+//            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)'")
         }
 
         // The map view's visible region changed.
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated: Bool) {
-            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
+//            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
         }
         
         // MARK: Optional - Loading the Map Data
