@@ -167,6 +167,8 @@ struct MapView: UIViewRepresentable {
         // GestureRecognizer Delegate function (optional)
         func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool { // TouchDetect - Called after every gesture starts
             print("wdh001 gestureRecognizerShouldBegin")
+            // This function was called because the user is messing with the map.
+            theMap_ViewModel.stopCenteringMap() // Tell view model user wants to stop auto-centering map
             return true
         }
 
