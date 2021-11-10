@@ -99,9 +99,12 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-
-        }
-    }
+        } // VStack
+        // Detect moving back to foreground
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            orientMap() // Re-orient map when app moves back to the foreground
+        } // navigation view
+    } // body
     
     
 
@@ -118,7 +121,7 @@ struct ContentView: View {
         }
     }
 
-}
+} // ContentView Struct
 
 
 struct ContentView_Previews: PreviewProvider {

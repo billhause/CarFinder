@@ -47,8 +47,8 @@ struct MapView: UIViewRepresentable {
         //  From Xcode Menu open Product->Scheme->Edit Scheme and select 'Arguments' then add environment variable "OS_ACTIVITY_MODE" with value "disable"
 //        mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
 //        mapView.isPitchEnabled = true
-//        mapView.isRotateEnabled = true
 //        mapView.showsBuildings = true
+        mapView.isRotateEnabled = false // Don't let the user manually rotate the map.
         mapView.showsUserLocation = true // Start map showing the user as a blue dot
         mapView.showsCompass = false
         mapView.showsScale = true  // Show distance scale when zooming

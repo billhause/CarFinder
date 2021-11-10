@@ -114,10 +114,6 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         return lastKnownLocation
     }
     
-//    // TODO: delete the getBoundingMKMapRect and make this func calculate the region directly in lat/lon
-//    func getBoundingMKCoordinateRegion2() -> MKCoordinateRegion {
-//        return MKCoordinateRegion(getBoundingMKMapRect())
-//    }
 
     // Find the distance between the parking spot and the current location.
     // Make the map width/height be double that distance minus some buffer percentage
