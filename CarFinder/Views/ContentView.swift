@@ -113,13 +113,14 @@ struct ContentView: View {
     private func orientMap() {
         withAnimation {
             print("FOOBAR ContentView.orientMap() called")
+            Haptic.shared.impact(style: .heavy)
             theMap_ViewModel.orientMap() // Call intent function
-            theMap_ViewModel.requestReview()
         }
     }
     
     private func updateParkingSpot() {
         theMap_ViewModel.requestReview()
+        Haptic.shared.impact(style: .heavy)
         withAnimation {
             theMap_ViewModel.updateParkingSpot() // Call intent function
         }
