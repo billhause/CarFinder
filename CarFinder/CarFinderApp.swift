@@ -28,6 +28,7 @@ struct CarFinderApp: App {
 
     init() { // Added by Bill to put any start up code 
         print("wdh CarFinderApp Default init() called")
+        AppInfoEntity.getAppInfoEntity().incrementUsageCount() // Count usage to know when to display the request for a review
     }
     
     var body: some Scene {

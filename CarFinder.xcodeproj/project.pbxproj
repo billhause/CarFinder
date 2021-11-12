@@ -15,6 +15,7 @@
 		28AF07FE271B7A0A0008121D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28AF07FD271B7A0A0008121D /* Preview Assets.xcassets */; };
 		28AF0800271B7A0A0008121D /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AF07FF271B7A0A0008121D /* Persistence.swift */; };
 		28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 28AF0801271B7A0A0008121D /* CarFinder.xcdatamodeld */; };
+		28CD3712273EF42A00EE2C6E /* AppInfoEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CD3711273EF42A00EE2C6E /* AppInfoEntity.swift */; };
 		28D28882271B82C70039CB72 /* ParkingSpotEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */; };
 		28D28884271B8E920039CB72 /* Map_ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28883271B8E920039CB72 /* Map_ViewModel.swift */; };
 		28D28886271CB8630039CB72 /* Map_Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28885271CB8630039CB72 /* Map_Model.swift */; };
@@ -31,6 +32,7 @@
 		28AF07FD271B7A0A0008121D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		28AF07FF271B7A0A0008121D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		28AF0802271B7A0A0008121D /* CarFinder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CarFinder.xcdatamodel; sourceTree = "<group>"; };
+		28CD3711273EF42A00EE2C6E /* AppInfoEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoEntity.swift; sourceTree = "<group>"; };
 		28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingSpotEntity.swift; sourceTree = "<group>"; };
 		28D28883271B8E920039CB72 /* Map_ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_ViewModel.swift; sourceTree = "<group>"; };
 		28D28885271CB8630039CB72 /* Map_Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_Model.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 			children = (
 				28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */,
 				28D28883271B8E920039CB72 /* Map_ViewModel.swift */,
+				28CD3711273EF42A00EE2C6E /* AppInfoEntity.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -189,6 +192,7 @@
 				28D28888271F51790039CB72 /* MapView.swift in Sources */,
 				28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */,
 				2836F254272F058D00D8B894 /* Haptic.swift in Sources */,
+				28CD3712273EF42A00EE2C6E /* AppInfoEntity.swift in Sources */,
 				28AF0800271B7A0A0008121D /* Persistence.swift in Sources */,
 				28AF07F9271B7A090008121D /* ContentView.swift in Sources */,
 				2836F2562733DB2600D8B894 /* AlertMessage.swift in Sources */,

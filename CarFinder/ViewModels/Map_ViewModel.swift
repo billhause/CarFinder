@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import MapKit
 import CoreLocation
+import StoreKit
 
 
 //Next create a new app library to write a debug file to the app folder
@@ -278,6 +279,14 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         mLocationManager?.requestLocation()
     }
         
+    func requestReview() {
+        if AppInfoEntity.getAppInfoEntity().usageCount > AppInfoEntity.REVIEW_THRESHOLD {
+            if let windowScene = UIApplication.shared.windows.first?.windowScene {
+                SKStoreReviewController.requestReview(in: windowScene)
+            }
+        }
+    }
+    
     func stopCenteringMap() {
         // Call this when the user is manipulating the map by hand to stop the map from recentering
         theMapModel.keepMapCentered = false

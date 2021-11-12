@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreData
 import os.log
+import StoreKit
 
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
@@ -102,7 +103,8 @@ struct ContentView: View {
         } // VStack
         // Detect moving back to foreground
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-            orientMap() // Re-orient map when app moves back to the foreground
+            theMap_ViewModel.orientMap() // Re-orient map when app moves back to the foreground
+            AppInfoEntity.getAppInfoEntity().incrementUsageCount() // Count usage to know when to display the request for a review
         } // navigation view
     } // body
     
@@ -110,12 +112,14 @@ struct ContentView: View {
 
     private func orientMap() {
         withAnimation {
-            print("ContentView.orientMap() called")
+            print("FOOBAR ContentView.orientMap() called")
             theMap_ViewModel.orientMap() // Call intent function
+            theMap_ViewModel.requestReview()
         }
     }
     
     private func updateParkingSpot() {
+        theMap_ViewModel.requestReview()
         withAnimation {
             theMap_ViewModel.updateParkingSpot() // Call intent function
         }
