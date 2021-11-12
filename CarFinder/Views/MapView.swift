@@ -20,27 +20,53 @@ import os
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 struct MapView: UIViewRepresentable {
-    
     typealias UIViewType = MKMapView
     
     @ObservedObject var theMap_ViewModel: Map_ViewModel
-    let mapView = MKMapView() // TouchDetect - made member var instead of local var in makeUIView
+    @State var mMapView = MKMapView() // TouchDetect - made member var instead of local var in makeUIView NOTE: MUST BE @State or duplicate instances will be created
     
+    func isParkingSpotShownOnMap() -> Bool {
+        // NOTE: There seems to be some buffer off the side of the map so sometimes it says it's shown when it isn't really
+        let parkingSpotLatLon = theMap_ViewModel.getParkingSpotLocation()
+        let parkingSpotMKMapPoint = MKMapPoint(parkingSpotLatLon)
+        let theVisibleMKMapRect = self.mMapView.visibleMapRect
+        let result = theVisibleMKMapRect.contains(parkingSpotMKMapPoint)
+        print("isParkingSpotShownOnMap(): \(result)")
+        return result
+        
+        // vvvvv TESTING Calculate using Lat/Lon instead of MapPoint coords vvvvv
+        let mapRegion = mMapView.region // Lat/Lon region with lat/lon delta spans
+        let pkLat = parkingSpotLatLon.latitude
+        let pkLon = parkingSpotLatLon.longitude
+        let top = mapRegion.center.latitude + mapRegion.span.latitudeDelta/2
+        let bottom = mapRegion.center.latitude - mapRegion.span.latitudeDelta/2
+        let left = mapRegion.center.longitude - mapRegion.span.longitudeDelta/2
+        let right = mapRegion.center.longitude + mapRegion.span.longitudeDelta/2
+        
+        var isOut = false
+        if pkLat > top {isOut = true}
+        else if pkLat < bottom {isOut = true}
+        else if pkLon > right {isOut = true}
+        else if pkLon < left {isOut = true}
+        
+        print("===== isOut: \(isOut)")
+        // ^^^^^ TESTING Calculate using Lat/Lon ^^^^^
+    }
     
     func makeCoordinator() -> MapViewCoordinator {
         // This func is required by the UIViewRepresentable protocol
         // It returns an instance of the class MapViewCoordinator which we also made below
         // MapViewCoordinator implements the MKMapViewDelegate protocol and has a method to return
         // a renderer for the polyline layer
-        return MapViewCoordinator(mapView, theMapVM: theMap_ViewModel) // Pass in the view model so that the delegate has access to it
+//        return MapViewCoordinator(mMapView, theMapVM: theMap_ViewModel) // Pass in the view model so that the delegate has access to it
+        return MapViewCoordinator(self, theMapVM: theMap_ViewModel) // Pass in the view model so that the delegate has access to it
     }
     
     // Required by UIViewRepresentable protocol
     func makeUIView(context: Context) -> MKMapView {
-//        let mapView = MKMapView()
-        
+
         // Part of the UIViewRepresentable protocol requirements
-        mapView.delegate = context.coordinator // Set delegate to the delegate returned by the 'makeCoordinator' function we added to this class
+        mMapView.delegate = context.coordinator // Set delegate to the delegate returned by the 'makeCoordinator' function we added to this class
 
         // Initialize Map Settings
         // NOTE Was getting runtime error on iPhone: "Style Z is requested for an invisible rect" to fix
@@ -48,54 +74,66 @@ struct MapView: UIViewRepresentable {
 //        mapView.userTrackingMode = MKUserTrackingMode.followWithHeading
 //        mapView.isPitchEnabled = true
 //        mapView.showsBuildings = true
-        mapView.isRotateEnabled = false // Don't let the user manually rotate the map.
-        mapView.showsUserLocation = true // Start map showing the user as a blue dot
-        mapView.showsCompass = false
-        mapView.showsScale = true  // Show distance scale when zooming
-        mapView.showsTraffic = false
-        mapView.mapType = .standard // .hybrid or .standard - Start as standard
+        mMapView.isRotateEnabled = false // Don't let the user manually rotate the map.
+        mMapView.showsUserLocation = true // Start map showing the user as a blue dot
+        mMapView.showsCompass = false
+        mMapView.showsScale = true  // Show distance scale when zooming
+        mMapView.showsTraffic = false
+        mMapView.mapType = .standard // .hybrid or .standard - Start as standard
 
         // Follow, center, and orient in direction of travel/heading
 //        mapView.setUserTrackingMode(MKUserTrackingMode.followWithHeading, animated: true) // .followWithHeading, .follow, .none
 
         // Add the parking spot annotation to the map
-        mapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
+        mMapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
         theMap_ViewModel.orientMap() // zoom in on the current location and the parking location
         
-        return mapView
+        return mMapView
 
     }
     
+//    mutating func updateMapViewReference(newMapView: MKMapView) {
+//        mMapView = newMapView
+//        print("updated mMapView wdh002")
+//    }
     
     // This gets called when ever the Model changes
     // Required by UIViewRepresentable protocol
     func updateUIView(_ mapView: MKMapView, context: Context) {
 //        print("MapView.updateUIView() called")
+        let theMapView = mapView
         
         // Set Hybrid/Standard mode if it changed
-        if (mapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
-            mapView.mapType = .hybrid
-        } else if (mapView.mapType == .hybrid) && !theMap_ViewModel.isHybrid {
-            mapView.mapType = .standard
+        if (theMapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
+            theMapView.mapType = .hybrid
+        } else if (theMapView.mapType == .hybrid) && !theMap_ViewModel.isHybrid {
+            theMapView.mapType = .standard
         }
         
-        if theMap_ViewModel.parkingSpotMoved {
+        
+        if theMap_ViewModel.parkingSpotMoved { // The user updated the parking spot so move the annotation
             theMap_ViewModel.parkingSpotMoved = false
             // Remove theParking Spot annotation and re-add it in case it moved and triggered this update
             // Avoid removing the User Location Annotation
-            mapView.annotations.forEach {
+            theMapView.annotations.forEach {
                 if !($0 is MKUserLocation) {
-                    mapView.removeAnnotation($0)
+                    theMapView.removeAnnotation($0)
                 }
             }
             // Now add the parking spot annotation in it's new location
-            mapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
+            theMapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
             print("Updated the Parking Spot in MapView")
         }
         
-        //Setup our Map View
+        // If the parking spot is not on the map AND the user is not Messing with the Map then recenter it
+        // It could be the parking spot drifted off the map OR we came back from background without knowing our location accurately
+        if theMap_ViewModel.shouldKeepMapCentered() {
+            if !isParkingSpotShownOnMap() {
+                theMap_ViewModel.orientMap()
+            }
+        }
 
-        // Size and Center the map
+        // Size and Center the map Because the user hit the Orient Map Button
         if theMap_ViewModel.isSizingAndCenteringNeeded() { // The use has hit the orient map button
             
             theMap_ViewModel.mapHasBeenResizedAndCentered()
@@ -103,21 +141,16 @@ struct MapView: UIViewRepresentable {
             theMap_ViewModel.startCenteringMap() // Set flag to continue to keep the map centered on the current location
             
             // Set the bounding rect to show the current location and the parking spot
-            mapView.setRegion(theMap_ViewModel.getBoundingMKCoordinateRegion(), animated: false) // If animated, this gets overwritten when heading is set
+            theMapView.setRegion(theMap_ViewModel.getBoundingMKCoordinateRegion(), animated: false) // If animated, this gets overwritten when heading is set
             
             // Center the map on the current location
-            mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: false) // If animated, this gets overwritten when heading is set
+            theMapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: false) // If animated, this gets overwritten when heading is set
 
             print("wdh MapView.UpdateUIView: Centering Map on Current Location")
         }
 
         // Set the HEADING
-        mapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
-        
-//        withAnimation { Has No Effect on jumpiness
-//        mapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
-//        }
-
+        theMapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
         
     }
     
@@ -132,34 +165,39 @@ struct MapView: UIViewRepresentable {
     // This class is defined INSIDE the MapView Struct
     class MapViewCoordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate { // TouchDetect: added Gesture Delegate protocol
         var theMap_ViewModel: Map_ViewModel
-        var mapView: MKMapView
+        var parent: MapView // TODO: Remove Parent and use the parent's mapView member instead instead
         var mTapGestureRecognizer = UITapGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
         var mPinchGestureRecognizer = UIPinchGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
 //        var mPanGestureRecognizer = UIPanGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
 
         // We need an init so we can pass in the Map_ViewModel class
 
-        init(_ theMKMapView: MKMapView, theMapVM: Map_ViewModel) { // Pass MKMapView for TouchDetect to convert pixels to lat/lon
+//        init(_ theMKMapView: MKMapView, theMapVM: Map_ViewModel) { // Pass MKMapView for TouchDetect to convert pixels to lat/lon
+        init(_ theMapView: MapView, theMapVM: Map_ViewModel) { // Pass MKMapView for TouchDetect to convert pixels to lat/lon
             theMap_ViewModel = theMapVM
-            self.mapView = theMKMapView // TouchDetect will need to reference this
+//            self.mapView = theMKMapView // TouchDetect will need to reference this
+            self.parent = theMapView // TouchDetect will need to reference this
+            self.parent.mMapView.isUserInteractionEnabled = true
             super.init()
 
-            self.mapView.isUserInteractionEnabled = true
+//            self.mapView.isUserInteractionEnabled = true
                         
             let thePanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panHandler(_:))) // TouchDetect
             thePanGestureRecognizer.delegate = self // TouchDetect
             thePanGestureRecognizer.minimumNumberOfTouches = 1
             thePanGestureRecognizer.maximumNumberOfTouches = 1
-            self.mapView.addGestureRecognizer(thePanGestureRecognizer) // TouchDetect
-            self.mapView.isUserInteractionEnabled = true
-
+//            self.mapView.addGestureRecognizer(thePanGestureRecognizer) // TouchDetect
+            self.parent.mMapView.addGestureRecognizer(thePanGestureRecognizer) // TouchDetect
+            
             self.mTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler)) // TouchDetect
             self.mTapGestureRecognizer.delegate = self // TouchDetect
-            self.mapView.addGestureRecognizer(mTapGestureRecognizer) // TouchDetect
+//            self.mapView.addGestureRecognizer(mTapGestureRecognizer) // TouchDetect
+            self.parent.mMapView.addGestureRecognizer(mTapGestureRecognizer) // TouchDetect
 
             self.mPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(pinchHandler)) // TouchDetect
             self.mPinchGestureRecognizer.delegate = self // TouchDetect
-            self.mapView.addGestureRecognizer(mPinchGestureRecognizer) // TouchDetect
+//            self.mapView.addGestureRecognizer(mPinchGestureRecognizer) // TouchDetect
+            self.parent.mMapView.addGestureRecognizer(mPinchGestureRecognizer) // TouchDetect
 
         }
 
@@ -174,15 +212,17 @@ struct MapView: UIViewRepresentable {
 
         // MARK: Custom GestureRecognizer Handler functions that I created
         @objc func tapHandler(_ sender: UITapGestureRecognizer) { // TouchDetect: detect single tap and convert to lat/lon
+//            var theMapView = sender.view as MapView
+            
             print("wdh003 @objc tapHandler called")
             if sender.state != .ended {
                 return // Only need to process at the end of the gesture
             }
                 
             // Position on the screen, CGPoint
-            let location = mTapGestureRecognizer.location(in: mapView)
+            let location = mTapGestureRecognizer.location(in: self.parent.mMapView)
             // postion on map, CLLocationCoordinate2D
-            let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+            let coordinate = self.parent.mMapView.convert(location, toCoordinateFrom: self.parent.mMapView)
             print("LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
         }
 

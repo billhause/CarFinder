@@ -36,7 +36,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     @Published public var theDistance = 123
     
 //    var theMapCamera = MKMapCamera()
-    private var mNeedToOrient = true // Set to true when the map needs to be oriented
+    private var mStillNeedToOrientMap = true // Set to true when the map needs to be oriented
 
     private var mLocationManager: CLLocationManager?
     
@@ -86,16 +86,16 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
 
     func orientMap() {
         orientMapFlag = true // Trigger map update
-        mNeedToOrient = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
+        mStillNeedToOrientMap = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
     }
 
     // View should call this to inform the ViewModel that the map no longer needs to be oriented
     func mapHasBeenResizedAndCentered() {
-        mNeedToOrient = false
+        mStillNeedToOrientMap = false
     }
     // View should call this to find out if the map needs to be oriented
     func isSizingAndCenteringNeeded() -> Bool {
-        return mNeedToOrient
+        return mStillNeedToOrientMap
     }
     
     
@@ -106,7 +106,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         var lastKnownLocation = parkingLocation
         
         if (mLocationManager != nil) {
-            let tmpLoc = mLocationManager!.location // CLLocation - Center Point wdh!
+            let tmpLoc = mLocationManager!.location // CLLocation - Center Point
             if tmpLoc != nil {
                 lastKnownLocation = CLLocationCoordinate2D(latitude: (tmpLoc!.coordinate.latitude), longitude: (tmpLoc!.coordinate.longitude))
             }
