@@ -38,10 +38,11 @@ struct ContentView: View {
                     Button(action: updateParkingSpot) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 0.0, alpha: 1.0)
                         let imageString = theMap_ViewModel.getParkingLocationImageName()
-                        Label("", systemImage: imageString)
+                        Label("Update Parking Spot", systemImage: imageString)
                             .foregroundColor(Color(theColor))
                             .padding() // Move the Parking symbol away from right border a little bit
-                    } .font(.largeTitle)
+                    } //.font(.largeTitle)
+                        .labelStyle(HorizontalLabelStyle())
                 }
                 MapView(theMap_ViewModel: theMap_ViewModel)
 //                    .gesture(
@@ -94,9 +95,10 @@ struct ContentView: View {
                     Button(action: orientMap) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0)
                         let imageString = theMap_ViewModel.getOrientMapImageName()
-                        Label("", systemImage: imageString)
+                        Label("Center Map", systemImage: imageString)
                             .foregroundColor(Color(theColor))
-                    } .font(.largeTitle) .padding()
+                    } //.font(.largeTitle) .padding()
+                        .labelStyle(HorizontalLabelStyle())
                     Spacer()
                 }
             }
@@ -128,7 +130,25 @@ struct ContentView: View {
 
 } // ContentView Struct
 
+// MARK: Custom Label Styles
+struct VerticalLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack {
+            configuration.icon.font(.headline)
+            configuration.title.font(.subheadline)
+        }
+    }
+}
+struct HorizontalLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.title.font(.subheadline)
+            configuration.icon.font(.system(size: 24)) // .headline, .largeTitle, .subheadline,
+        }
+    }
+}
 
+// MARK: Previews
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(theMap_ViewModel: Map_ViewModel())
