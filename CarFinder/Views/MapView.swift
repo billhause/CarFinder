@@ -31,26 +31,7 @@ struct MapView: UIViewRepresentable {
         let parkingSpotMKMapPoint = MKMapPoint(parkingSpotLatLon)
         let theVisibleMKMapRect = self.mMapView.visibleMapRect
         let result = theVisibleMKMapRect.contains(parkingSpotMKMapPoint)
-        print("isParkingSpotShownOnMap(): \(result)")
         return result
-        
-        // vvvvv TESTING Calculate using Lat/Lon instead of MapPoint coords vvvvv
-        let mapRegion = mMapView.region // Lat/Lon region with lat/lon delta spans
-        let pkLat = parkingSpotLatLon.latitude
-        let pkLon = parkingSpotLatLon.longitude
-        let top = mapRegion.center.latitude + mapRegion.span.latitudeDelta/2
-        let bottom = mapRegion.center.latitude - mapRegion.span.latitudeDelta/2
-        let left = mapRegion.center.longitude - mapRegion.span.longitudeDelta/2
-        let right = mapRegion.center.longitude + mapRegion.span.longitudeDelta/2
-        
-        var isOut = false
-        if pkLat > top {isOut = true}
-        else if pkLat < bottom {isOut = true}
-        else if pkLon > right {isOut = true}
-        else if pkLon < left {isOut = true}
-        
-        print("===== isOut: \(isOut)")
-        // ^^^^^ TESTING Calculate using Lat/Lon ^^^^^
     }
     
     func makeCoordinator() -> MapViewCoordinator {
@@ -102,6 +83,7 @@ struct MapView: UIViewRepresentable {
     func updateUIView(_ mapView: MKMapView, context: Context) {
 //        print("MapView.updateUIView() called")
         let theMapView = mapView
+        var bShouldSizeAndCenter = theMap_ViewModel.isSizingAndCenteringNeeded() 
         
         // Set Hybrid/Standard mode if it changed
         if (theMapView.mapType != .hybrid) && theMap_ViewModel.isHybrid {
@@ -123,6 +105,9 @@ struct MapView: UIViewRepresentable {
             // Now add the parking spot annotation in it's new location
             theMapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
             print("Updated the Parking Spot in MapView")
+            
+            // Now orient the map for the new parking spot location
+            bShouldSizeAndCenter = true // set flag that will Size and Center the map a few lines down from here
         }
         
         // If the parking spot is not on the map AND the user is not Messing with the Map then recenter it
@@ -134,11 +119,11 @@ struct MapView: UIViewRepresentable {
         }
 
         // Size and Center the map Because the user hit the Orient Map Button
-        if theMap_ViewModel.isSizingAndCenteringNeeded() { // The use has hit the orient map button
+        if bShouldSizeAndCenter { // The use has hit the orient map button or did something requireing the map to be re-oriented
             
             theMap_ViewModel.mapHasBeenResizedAndCentered()
             
-            theMap_ViewModel.startCenteringMap() // Set flag to continue to keep the map centered on the current location
+            theMap_ViewModel.startCenteringMap() // Switch to 'Centered Map Mode' to keep the map centered on the current location
             
             // Set the bounding rect to show the current location and the parking spot
             theMapView.setRegion(theMap_ViewModel.getBoundingMKCoordinateRegion(), animated: false) // If animated, this gets overwritten when heading is set
@@ -146,7 +131,7 @@ struct MapView: UIViewRepresentable {
             // Center the map on the current location
             theMapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: false) // If animated, this gets overwritten when heading is set
 
-            print("wdh MapView.UpdateUIView: Centering Map on Current Location")
+//            print("wdh MapView.UpdateUIView: Centering Map on Current Location")
         }
 
         // Set the HEADING
@@ -204,7 +189,6 @@ struct MapView: UIViewRepresentable {
         // MARK: GestureRecognizer Delegate callback functions
         // GestureRecognizer Delegate function (optional)
         func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool { // TouchDetect - Called after every gesture starts
-            print("wdh001 gestureRecognizerShouldBegin")
             // This function was called because the user is messing with the map.
             theMap_ViewModel.stopCenteringMap() // Tell view model user wants to stop auto-centering map
             return true
@@ -306,7 +290,7 @@ struct MapView: UIViewRepresentable {
         
         // The location of the user was updated.
         func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation) {
-            print("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
+//            print("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
             // Center the map on the current location
             if theMap_ViewModel.shouldKeepMapCentered() { // Only do this if the user wants the map to stay centered
                 mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true)
@@ -330,7 +314,7 @@ struct MapView: UIViewRepresentable {
         // Return the annotation view to display for the specified annotation or
         // nil if you want to display a standard annotation view.
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            print("Called13: 'func mapView(_ mapView: MKMapView, viewFor: MKAnnotation) -> MKAnnotationView?'")
+//            print("Called13: 'func mapView(_ mapView: MKMapView, viewFor: MKAnnotation) -> MKAnnotationView?'")
 
             if (annotation is MKUserLocation) {
                 // This is the User Location (Blue Dot) so just use the default annotation icon by returning nil
@@ -361,7 +345,7 @@ struct MapView: UIViewRepresentable {
         
         // One or more annotation views were added to the map.
         func mapView(_ mapView: MKMapView, didAdd: [MKAnnotationView]) {
-            print("Called14: 'func mapView(_ mapView: MKMapView, didAdd: [MKAnnotationView])'")
+//            print("Called14: 'func mapView(_ mapView: MKMapView, didAdd: [MKAnnotationView])'")
         }
 
         // The user tapped one of the annotation view’s accessory buttons.

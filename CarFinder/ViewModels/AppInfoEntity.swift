@@ -34,7 +34,7 @@ extension AppInfoEntity {
         } else {
             // No AppInfoEntity was found so create one, save it and return it
             let theAppInfoEntity = AppInfoEntity(context: viewContext)
-            theAppInfoEntity.updateUsageCount(theCount: 1) // Must be the first one
+            theAppInfoEntity.updateUsageCount(theCount: 0) // Must be the first run so set to 0
             return theAppInfoEntity
         }
     }
@@ -48,7 +48,7 @@ extension AppInfoEntity {
     // Increment Usage Count
     public func incrementUsageCount() {
         usageCount += 1
-        print("Count: \(usageCount) - AppInfoEntity.incrementUsageCount()")
+//        print("Count: \(usageCount) - AppInfoEntity.incrementUsageCount()")
         saveAppInfoEntity()
     }
     

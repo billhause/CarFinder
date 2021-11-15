@@ -66,7 +66,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     // MARK: Init Functions
     override init() {
-        print("Map_ViewModel init() called")
+//        print("Map_ViewModel init() called")
 
         // Initialize the LocationManager - https://stackoverflow.com/questions/60356182/how-to-invoke-a-method-in-a-view-in-swiftui
         mLocationManager = CLLocationManager()
@@ -83,11 +83,6 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         // Apps that want to receive location updates when suspended must include the UIBackgroundModes key (with the location value) in their app’s Info.plist
         //mLocationManager?.allowsBackgroundLocationUpdates = true //must include the UIBackgroundModes key in the Info.plist
         
-    }
-
-    func orientMap() {
-        orientMapFlag = true // Trigger map update
-        mStillNeedToOrientMap = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
     }
 
     // View should call this to inform the ViewModel that the map no longer needs to be oriented
@@ -269,14 +264,24 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     
     // MARK: Intent Functions
+    
+    
+    func orientMap() {
+        orientMapFlag = true // Trigger map update
+        mStillNeedToOrientMap = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
+    }
+
+    
     func updateParkingSpot() {
-        print("Map_ViewModel.updateParkingSpot() wdh Intent Function")
+//        print("Map_ViewModel.updateParkingSpot() wdh Intent Function")
         
         // Set the Flag to tell the callback to upate the parking spot location SEE: locationManager(didUpdateLocations:) in this same class
         theMapModel.updateParkingSpotFlag = true
         
         // Tell the location manager to upate the location and call the locationManager(didUpdateLocations:) function above.
         mLocationManager?.requestLocation()
+        
+//        orientMap() // Set flags to center the map when locationManager(didUpdateLocations:) gets called next
     }
         
     func requestReview() {

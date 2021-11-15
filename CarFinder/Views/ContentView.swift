@@ -81,7 +81,7 @@ struct ContentView: View {
                     }
                     .pickerStyle(.segmented)
                     .onChange(of: theMap_ViewModel.isHybrid) { value in
-                        print("Hybrid Picker Called \(value)")
+//                        print("Hybrid Picker Called \(value)")
                     }
                     .padding()
 //                    // Toggle
@@ -114,7 +114,6 @@ struct ContentView: View {
 
     private func orientMap() {
         withAnimation {
-            print("FOOBAR ContentView.orientMap() called")
             Haptic.shared.impact(style: .heavy)
             theMap_ViewModel.orientMap() // Call intent function
         }
@@ -126,6 +125,12 @@ struct ContentView: View {
         withAnimation {
             theMap_ViewModel.updateParkingSpot() // Call intent function
         }
+//        // Delay and then orient the map wdhx
+//        let DELEAY_IN_SECONDS = 1.0 // Give the map a moment to update the parking spot before orienting
+//        DispatchQueue.main.asyncAfter(deadline: .now() + DELEAY_IN_SECONDS) {
+//            theMap_ViewModel.orientMap() // Zoom in after updationg the parking spot
+//            print("DispatchQueue.main.asyncAfter(deadline: .now() + 1)")
+//        }
     }
 
 } // ContentView Struct

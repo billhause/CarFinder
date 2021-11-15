@@ -16,6 +16,7 @@
 		28AF0800271B7A0A0008121D /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AF07FF271B7A0A0008121D /* Persistence.swift */; };
 		28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 28AF0801271B7A0A0008121D /* CarFinder.xcdatamodeld */; };
 		28CD3712273EF42A00EE2C6E /* AppInfoEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CD3711273EF42A00EE2C6E /* AppInfoEntity.swift */; };
+		28CD371427410A4F00EE2C6E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28CD371327410A4F00EE2C6E /* LaunchScreen.storyboard */; };
 		28D28882271B82C70039CB72 /* ParkingSpotEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */; };
 		28D28884271B8E920039CB72 /* Map_ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28883271B8E920039CB72 /* Map_ViewModel.swift */; };
 		28D28886271CB8630039CB72 /* Map_Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28885271CB8630039CB72 /* Map_Model.swift */; };
@@ -33,6 +34,8 @@
 		28AF07FF271B7A0A0008121D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		28AF0802271B7A0A0008121D /* CarFinder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CarFinder.xcdatamodel; sourceTree = "<group>"; };
 		28CD3711273EF42A00EE2C6E /* AppInfoEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoEntity.swift; sourceTree = "<group>"; };
+		28CD371327410A4F00EE2C6E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		28CD371527410BE900EE2C6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		28D28881271B82C70039CB72 /* ParkingSpotEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingSpotEntity.swift; sourceTree = "<group>"; };
 		28D28883271B8E920039CB72 /* Map_ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_ViewModel.swift; sourceTree = "<group>"; };
 		28D28885271CB8630039CB72 /* Map_Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_Model.swift; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 		28AF07F5271B7A090008121D /* CarFinder */ = {
 			isa = PBXGroup;
 			children = (
+				28CD371527410BE900EE2C6E /* Info.plist */,
 				28AF07F6271B7A090008121D /* CarFinderApp.swift */,
 				28D2887E271B80620039CB72 /* Model */,
 				28D2887F271B806D0039CB72 /* ViewModels */,
@@ -79,6 +83,7 @@
 				28AF07FC271B7A0A0008121D /* Preview Content */,
 				2836F253272F058D00D8B894 /* Haptic.swift */,
 				2836F2552733DB2600D8B894 /* AlertMessage.swift */,
+				28CD371327410A4F00EE2C6E /* LaunchScreen.storyboard */,
 			);
 			path = CarFinder;
 			sourceTree = "<group>";
@@ -176,6 +181,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28CD371427410A4F00EE2C6E /* LaunchScreen.storyboard in Resources */,
 				28AF07FE271B7A0A0008121D /* Preview Assets.xcassets in Resources */,
 				28AF07FB271B7A0A0008121D /* Assets.xcassets in Resources */,
 			);
@@ -332,10 +338,11 @@
 				DEVELOPMENT_TEAM = XXF7Y2ZTA7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarFinder/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs to know where you are to guide you back to your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -363,10 +370,11 @@
 				DEVELOPMENT_TEAM = XXF7Y2ZTA7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarFinder/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs to know where you are to guide you back to your parking spot.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
