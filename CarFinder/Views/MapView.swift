@@ -104,7 +104,7 @@ struct MapView: UIViewRepresentable {
             }
             // Now add the parking spot annotation in it's new location
             theMapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
-            print("Updated the Parking Spot in MapView")
+//            print("Updated the Parking Spot in MapView")
             
             // Now orient the map for the new parking spot location
             bShouldSizeAndCenter = true // set flag that will Size and Center the map a few lines down from here

@@ -30,8 +30,14 @@
                                     <constraint firstAttribute="height" constant="150" id="oKf-z1-btK"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Car Finder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y2m-7P-15N">
-                                <rect key="frame" x="138" y="539" width="138.5" height="37"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mark Your" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y2m-7P-15N">
+                                <rect key="frame" x="140" y="539" width="134" height="37"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                <color key="textColor" systemColor="systemGreenColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Parking Spot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xRF-Yu-e90">
+                                <rect key="frame" x="122.5" y="593" width="169" height="37"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
@@ -43,6 +49,8 @@
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="obG-Y5-kRd" secondAttribute="centerX" id="5cz-MP-9tL"/>
                             <constraint firstItem="y2m-7P-15N" firstAttribute="top" secondItem="fGP-aR-r1v" secondAttribute="bottom" constant="16" id="9BW-xr-FUa"/>
                             <constraint firstItem="fGP-aR-r1v" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="BOe-pW-xTS"/>
+                            <constraint firstItem="xRF-Yu-e90" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="J4s-nq-VYL"/>
+                            <constraint firstItem="xRF-Yu-e90" firstAttribute="top" secondItem="y2m-7P-15N" secondAttribute="bottom" constant="17" id="NMh-je-sqv"/>
                             <constraint firstItem="obG-Y5-kRd" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" symbolic="YES" id="SfN-ll-jLj"/>
                             <constraint firstItem="fGP-aR-r1v" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Wrg-wx-2mm"/>
                             <constraint firstAttribute="bottom" secondItem="obG-Y5-kRd" secondAttribute="bottom" constant="20" id="Y44-ml-fuU"/>

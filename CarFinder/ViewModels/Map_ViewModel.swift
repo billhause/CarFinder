@@ -204,7 +204,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
             // Update the parking spot location and set the flag back to false
             theMapModel.updateParkingSpotFlag = false
             ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
-            print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
+//            print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
             
             // Now that the parking spot has been updated, let the map know to move the marker
             parkingSpotMoved = true
