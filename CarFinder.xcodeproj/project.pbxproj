@@ -21,6 +21,7 @@
 		28D28884271B8E920039CB72 /* Map_ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28883271B8E920039CB72 /* Map_ViewModel.swift */; };
 		28D28886271CB8630039CB72 /* Map_Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28885271CB8630039CB72 /* Map_Model.swift */; };
 		28D28888271F51790039CB72 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D28887271F51790039CB72 /* MapView.swift */; };
+		28D7E86E2749C5A000DF1506 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D7E86D2749C5A000DF1506 /* Reachability.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		28D28883271B8E920039CB72 /* Map_ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_ViewModel.swift; sourceTree = "<group>"; };
 		28D28885271CB8630039CB72 /* Map_Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_Model.swift; sourceTree = "<group>"; };
 		28D28887271F51790039CB72 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		28D7E86D2749C5A000DF1506 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 				28AF07FF271B7A0A0008121D /* Persistence.swift */,
 				28AF0801271B7A0A0008121D /* CarFinder.xcdatamodeld */,
 				28AF07FC271B7A0A0008121D /* Preview Content */,
+				28D7E86C2749C53700DF1506 /* ThirdPartyCode */,
 				2836F253272F058D00D8B894 /* Haptic.swift */,
 				2836F2552733DB2600D8B894 /* AlertMessage.swift */,
 				28CD371327410A4F00EE2C6E /* LaunchScreen.storyboard */,
@@ -121,6 +124,14 @@
 				28D28887271F51790039CB72 /* MapView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		28D7E86C2749C53700DF1506 /* ThirdPartyCode */ = {
+			isa = PBXGroup;
+			children = (
+				28D7E86D2749C5A000DF1506 /* Reachability.swift */,
+			);
+			path = ThirdPartyCode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,6 +207,7 @@
 			files = (
 				28D28882271B82C70039CB72 /* ParkingSpotEntity.swift in Sources */,
 				28D28888271F51790039CB72 /* MapView.swift in Sources */,
+				28D7E86E2749C5A000DF1506 /* Reachability.swift in Sources */,
 				28AF0803271B7A0A0008121D /* CarFinder.xcdatamodeld in Sources */,
 				2836F254272F058D00D8B894 /* Haptic.swift in Sources */,
 				28CD3712273EF42A00EE2C6E /* AppInfoEntity.swift in Sources */,

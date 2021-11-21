@@ -10,6 +10,7 @@ import SwiftUI
 import MapKit
 import CoreLocation
 import StoreKit
+import Network
 
 
 //Next create a new app library to write a debug file to the app folder
@@ -273,21 +274,27 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
 
     
     func updateParkingSpot() {
-//        print("Map_ViewModel.updateParkingSpot() wdh Intent Function")
-        
         // Set the Flag to tell the callback to upate the parking spot location SEE: locationManager(didUpdateLocations:) in this same class
         theMapModel.updateParkingSpotFlag = true
         
         // Tell the location manager to upate the location and call the locationManager(didUpdateLocations:) function above.
         mLocationManager?.requestLocation()
-        
-//        orientMap() // Set flags to center the map when locationManager(didUpdateLocations:) gets called next
     }
         
     func requestReview() {
         if AppInfoEntity.getAppInfoEntity().usageCount > AppInfoEntity.REVIEW_THRESHOLD {
-            if let windowScene = UIApplication.shared.windows.first?.windowScene {
-                SKStoreReviewController.requestReview(in: windowScene)
+        // NOTE: If not connected to Internet, then requestReview will lock the interface
+            let reachability = try? Reachability() // Return nil if throws an error
+            if reachability?.connection == .wifi {
+//                print("Reachable via WiFi")
+                if let windowScene = UIApplication.shared.windows.first?.windowScene {
+                    SKStoreReviewController.requestReview(in: windowScene)
+                }
+            } else if reachability?.connection == .cellular {
+//                print("Reachable via Cellular")
+                if let windowScene = UIApplication.shared.windows.first?.windowScene {
+                    SKStoreReviewController.requestReview(in: windowScene)
+                }
             }
         }
     }
