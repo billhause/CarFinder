@@ -13,7 +13,7 @@ import StoreKit
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-    @ObservedObject var theAlert = AlertDialog.shared // Alert
+    @State var theAlert = AlertDialog.shared // Alert -Changed from @ObservedObject to State to avoid AttributeGraph cycle warnings
     
     var body: some View {
         NavigationView {
@@ -95,7 +95,7 @@ struct ContentView: View {
                     Button(action: orientMap) {
                         let theColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0)
                         let imageString = theMap_ViewModel.getOrientMapImageName()
-                        Label("Center Map", systemImage: imageString)
+                        Label("Center & Zoom", systemImage: imageString)
                             .foregroundColor(Color(theColor))
                     } //.font(.largeTitle) .padding()
                         .labelStyle(HorizontalLabelStyle())

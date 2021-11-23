@@ -67,7 +67,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     
     // MARK: Init Functions
     override init() {
-//        print("Map_ViewModel init() called")
+//        MyLog.debug("Map_ViewModel init() called")
 
         // Initialize the LocationManager - https://stackoverflow.com/questions/60356182/how-to-invoke-a-method-in-a-view-in-swiftui
         mLocationManager = CLLocationManager()
@@ -197,7 +197,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // REQUIRED - Called EVERY TIME the location data is updated
     // The MOST RECENT location is the last one in the array
     func locationManager(_ locationManager: CLLocationManager, didUpdateLocations: [CLLocation]) {
-//        print("Called: Map_ViewModel.locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation])")
+//        MyLog.debug("Called: Map_ViewModel.locationManager(_ locationManager CLLocationManager, didUpdateLocations: [CLLocation])")
         
         let currentLocation = didUpdateLocations.last!.coordinate // The array is guananteed to have at least one element wdh!
 
@@ -205,7 +205,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
             // Update the parking spot location and set the flag back to false
             theMapModel.updateParkingSpotFlag = false
             ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
-//            print("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
+//            MyLog.debug("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
             
             // Now that the parking spot has been updated, let the map know to move the marker
             parkingSpotMoved = true
@@ -231,7 +231,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // This must be implemented or you'll get a runtime error when requesting a map location update
     // Tells the delegate that the location manager was unable to retrieve a location value.
     func locationManager(_ locationManager: CLLocationManager, didFailWithError: Error) {
-        print("wdh ERROR Map_ViewModel.locationManager(didFailWithError) Error: \(didFailWithError.localizedDescription)")
+        MyLog.debug("wdh Due to looking for location before user approved Allow Once ERROR Map_ViewModel.locationManager(didFailWithError) Error: \(didFailWithError.localizedDescription)")
     }
     
 
@@ -239,7 +239,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // Heading - Tells the delegate that the location manager received updated heading information.
     // Note: Must have previously called mLocationManager?.startUpdatingHeading() for this to be called
     func locationManager(_ locationManager: CLLocationManager, didUpdateHeading: CLHeading) {
-//        print("Map_ViewModel.LocaitonManager didUpdateHeading: \(didUpdateHeading)")
+//        MyLog.debug("Map_ViewModel.LocaitonManager didUpdateHeading: \(didUpdateHeading)")
         theMapModel.currentHeading = didUpdateHeading.trueHeading
     }
 //
@@ -270,6 +270,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     func orientMap() {
         orientMapFlag = true // Trigger map update
         mStillNeedToOrientMap = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
+//        AlertDialog.shared.Alert("Test Alert: Called from ViewModel orientMap()")
     }
 
     
@@ -286,12 +287,12 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         // NOTE: If not connected to Internet, then requestReview will lock the interface
             let reachability = try? Reachability() // Return nil if throws an error
             if reachability?.connection == .wifi {
-//                print("Reachable via WiFi")
+//                MyLog.debug("Reachable via WiFi")
                 if let windowScene = UIApplication.shared.windows.first?.windowScene {
                     SKStoreReviewController.requestReview(in: windowScene)
                 }
             } else if reachability?.connection == .cellular {
-//                print("Reachable via Cellular")
+//                MyLog.debug("Reachable via Cellular")
                 if let windowScene = UIApplication.shared.windows.first?.windowScene {
                     SKStoreReviewController.requestReview(in: windowScene)
                 }

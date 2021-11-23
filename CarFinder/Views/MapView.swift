@@ -75,13 +75,13 @@ struct MapView: UIViewRepresentable {
     
 //    mutating func updateMapViewReference(newMapView: MKMapView) {
 //        mMapView = newMapView
-//        print("updated mMapView wdh002")
+//        MyLog.debug("updated mMapView wdh002")
 //    }
     
     // This gets called when ever the Model changes
     // Required by UIViewRepresentable protocol
     func updateUIView(_ mapView: MKMapView, context: Context) {
-//        print("MapView.updateUIView() called")
+//        MyLog.debug("MapView.updateUIView() called")
         let theMapView = mapView
         var bShouldSizeAndCenter = theMap_ViewModel.isSizingAndCenteringNeeded() 
         
@@ -104,7 +104,7 @@ struct MapView: UIViewRepresentable {
             }
             // Now add the parking spot annotation in it's new location
             theMapView.addAnnotations([theMap_ViewModel.getParkingSpot()])
-//            print("Updated the Parking Spot in MapView")
+//            MyLog.debug("Updated the Parking Spot in MapView")
             
             // Now orient the map for the new parking spot location
             bShouldSizeAndCenter = true // set flag that will Size and Center the map a few lines down from here
@@ -131,7 +131,7 @@ struct MapView: UIViewRepresentable {
             // Center the map on the current location
             theMapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: false) // If animated, this gets overwritten when heading is set
 
-//            print("wdh MapView.UpdateUIView: Centering Map on Current Location")
+//            MyLog.debug("wdh MapView.UpdateUIView: Centering Map on Current Location")
         }
 
         // Set the HEADING
@@ -150,7 +150,7 @@ struct MapView: UIViewRepresentable {
     // This class is defined INSIDE the MapView Struct
     class MapViewCoordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate { // TouchDetect: added Gesture Delegate protocol
         var theMap_ViewModel: Map_ViewModel
-        var parent: MapView // TODO: Remove Parent and use the parent's mapView member instead instead
+        var parent: MapView // TODO: Remove Parent and use the parent's mapView member instead
         var mTapGestureRecognizer = UITapGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
         var mPinchGestureRecognizer = UIPinchGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
 //        var mPanGestureRecognizer = UIPanGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
@@ -198,7 +198,6 @@ struct MapView: UIViewRepresentable {
         @objc func tapHandler(_ sender: UITapGestureRecognizer) { // TouchDetect: detect single tap and convert to lat/lon
 //            var theMapView = sender.view as MapView
             
-            print("wdh003 @objc tapHandler called")
             if sender.state != .ended {
                 return // Only need to process at the end of the gesture
             }
@@ -207,22 +206,22 @@ struct MapView: UIViewRepresentable {
             let location = mTapGestureRecognizer.location(in: self.parent.mMapView)
             // postion on map, CLLocationCoordinate2D
             let coordinate = self.parent.mMapView.convert(location, toCoordinateFrom: self.parent.mMapView)
-            print("LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
+            MyLog.debug("LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
         }
 
         // NOTE: FOR SOME REASON the panHandler and pinchHandler call-backs don't ever get called
         @objc func panHandler(_ sender: UIPanGestureRecognizer) { // TouchDetect
-            print("panHandler Called in MapViewCoordinator class")
+            MyLog.debug("panHandler Called in MapViewCoordinator class")
         }
         @objc func pinchHandler(_ sender: UIPinchGestureRecognizer) { // TouchDetect: detect pinch
-            print("pinchHandler Called in MapViewCoordinator class")
+            MyLog.debug("pinchHandler Called in MapViewCoordinator class")
         }
 
         
         // Added to render the PolyLine Overlay to draw the route between two points
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             let renderer = MKPolylineRenderer(overlay: overlay)
-            print("wdh Created PolyLine Renderer")
+            MyLog.debug("wdh Created PolyLine Renderer")
             renderer.strokeColor = .blue
             renderer.lineWidth = 5
             return renderer
@@ -236,61 +235,61 @@ struct MapView: UIViewRepresentable {
         // MARK: Optional - Responding to Map Position Changes
         // The region displayed by the map view is about to change.
         func mapView(_ mapView: MKMapView, regionWillChangeAnimated: Bool) {
-//            print("Called1 'func mapView(_ mapView: MKMapView, regionWillChangeAnimated: \(regionWillChangeAnimated))'")
+//            MyLog.debug("Called1 'func mapView(_ mapView: MKMapView, regionWillChangeAnimated: \(regionWillChangeAnimated))'")
         }
         
         // The map view's visible region changed.
         func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-//            print("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)'")
+//            MyLog.debug("Called2 'func mapViewDidChangeVisibleRegion(_ mapView: MKMapView)'")
         }
 
         // The map view's visible region changed.
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated: Bool) {
-//            print("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
+//            MyLog.debug("Called3 'func mapView(MKMapView, regionDidChangeAnimated: \(regionDidChangeAnimated))'")
         }
         
         // MARK: Optional - Loading the Map Data
         
         // The specified map view is about to retrieve some map data.
         func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
-//            print("Called4 'func mapViewWillStartLoadingMap(_ mapView: MKMapView)'")
+//            MyLog.debug("Called4 'func mapViewWillStartLoadingMap(_ mapView: MKMapView)'")
         }
         
         // The specified map view successfully loaded the needed map data.
         func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
-//            print("wdh Finished Loading Map 'func mapViewDidFinishLoadingMap(_ mapView: MKMapView)'")
+//            MyLog.debug("wdh Finished Loading Map 'func mapViewDidFinishLoadingMap(_ mapView: MKMapView)'")
         }
         
         // The specified view was unable to load the map data.
         func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError: Error) {
-//            print("Called6 'func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError: Error)'")
+//            MyLog.debug("Called6 'func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError: Error)'")
         }
         
         // The map view is about to start rendering some of its tiles.
         func mapViewWillStartRenderingMap(_ mapView: MKMapView) {
-//            print("Called7 'func mapViewWillStartRenderingMap(_ mapView: MKMapView)'")
+//            MyLog.debug("Called7 'func mapViewWillStartRenderingMap(_ mapView: MKMapView)'")
         }
         
         // The map view has finished rendering all visible tiles.
         func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-//            print("Called7.5 func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: \(fullyRendered))'")
+//            MyLog.debug("Called7.5 func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: \(fullyRendered))'")
         }
 
         // MARK: Optional - Tracking the User Location
         
         // The map view will start tracking the user’s position.
         func mapViewWillStartLocatingUser(_ mapView: MKMapView) {
-//            print("Called8: 'func mapViewWillStartLocatingUser(_ mapView: MKMapView)'")
+//            MyLog.debug("Called8: 'func mapViewWillStartLocatingUser(_ mapView: MKMapView)'")
         }
         
         // The map view stopped tracking the user’s location.
         func mapViewDidStopLocatingUser(_ mapView: MKMapView) {
-//            print("Called9: 'func mapViewDidStopLocatingUser(_ mapView: MKMapView)'")
+//            MyLog.debug("Called9: 'func mapViewDidStopLocatingUser(_ mapView: MKMapView)'")
         }
         
         // The location of the user was updated.
         func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation) {
-//            print("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
+//            MyLog.debug("Called10: 'func mapView(_ mapView: MKMapView, didUpdate: MKUserLocation)'")
             // Center the map on the current location
             if theMap_ViewModel.shouldKeepMapCentered() { // Only do this if the user wants the map to stay centered
                 mapView.setCenter(theMap_ViewModel.getLastKnownLocation(), animated: true)
@@ -300,13 +299,13 @@ struct MapView: UIViewRepresentable {
         
         // An attempt to locate the user’s position failed.
         func mapView(_ mapView: MKMapView, didFailToLocateUserWithError: Error) {
-//            print("Called11: 'func mapView(_ mapView: MKMapView, didFailToLocateUserWithError: Error)'")
+//            MyLog.debug("Called11: 'func mapView(_ mapView: MKMapView, didFailToLocateUserWithError: Error)'")
         }
         
         // The user tracking mode changed.
         func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: Bool) {
-            print("wdh MKUserTrackingMode: \(didChange.rawValue)")
-//            print("Called12: 'func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: \(animated)'")
+            MyLog.debug("wdh MKUserTrackingMode: \(didChange.rawValue)")
+//            MyLog.debug("Called12: 'func mapView(_ mapView: MKMapView, didChange: MKUserTrackingMode, animated: \(animated)'")
         }
         
         // MARK: Optional - Managing Annotation Views
@@ -314,7 +313,7 @@ struct MapView: UIViewRepresentable {
         // Return the annotation view to display for the specified annotation or
         // nil if you want to display a standard annotation view.
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-//            print("Called13: 'func mapView(_ mapView: MKMapView, viewFor: MKAnnotation) -> MKAnnotationView?'")
+//            MyLog.debug("Called13: 'func mapView(_ mapView: MKMapView, viewFor: MKAnnotation) -> MKAnnotationView?'")
 
             if (annotation is MKUserLocation) {
                 // This is the User Location (Blue Dot) so just use the default annotation icon by returning nil
@@ -345,17 +344,17 @@ struct MapView: UIViewRepresentable {
         
         // One or more annotation views were added to the map.
         func mapView(_ mapView: MKMapView, didAdd: [MKAnnotationView]) {
-//            print("Called14: 'func mapView(_ mapView: MKMapView, didAdd: [MKAnnotationView])'")
+//            MyLog.debug("Called14: 'func mapView(_ mapView: MKMapView, didAdd: [MKAnnotationView])'")
         }
 
         // The user tapped one of the annotation view’s accessory buttons.
         func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped: UIControl) {
-            print("Called15: 'func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped: UIControl)'")
+            MyLog.debug("Called15: 'func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped: UIControl)'")
         }
         
         // Asks the delegate to provide a cluster annotation object for the specified annotations.
         func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations: [MKAnnotation]) -> MKClusterAnnotation {
-            print("THIS IS WRONG wdh Called: 'func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations: [MKAnnotation]) -> MKClusterAnnotation'")
+            MyLog.debug("THIS IS WRONG wdh Called: 'func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations: [MKAnnotation]) -> MKClusterAnnotation'")
             return MKClusterAnnotation(memberAnnotations: clusterAnnotationForMemberAnnotations) // THIS IS WRONG
         }
 
@@ -364,19 +363,19 @@ struct MapView: UIViewRepresentable {
 
         // The drag state of one of its annotation views changed.
         func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, didChange: MKAnnotationView.DragState, fromOldState: MKAnnotationView.DragState) {
-            print("Called16: 'func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, didChange: MKAnnotationView.DragState, fromOldState: MKAnnotationView.DragState)'")
+            MyLog.debug("Called16: 'func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, didChange: MKAnnotationView.DragState, fromOldState: MKAnnotationView.DragState)'")
         }
 
         // MARK: Optional - Selecting Annotation Views
         
         // One of its annotation views was selected.
         func mapView(_ mapView: MKMapView, didSelect: MKAnnotationView) {
-            print("Called17: 'func mapView(_ mapView: MKMapView, didSelect: MKAnnotationView)'")
+            MyLog.debug("Called17: 'func mapView(_ mapView: MKMapView, didSelect: MKAnnotationView)'")
         }
 
         // One of its annotation views was deselected.
         func mapView(_ mapView: MKMapView, didDeselect: MKAnnotationView) {
-            print("Called18: 'func mapView(_ mapView: MKMapView, didDeselect: MKAnnotationView)'")
+            MyLog.debug("Called18: 'func mapView(_ mapView: MKMapView, didDeselect: MKAnnotationView)'")
         }
 
         // MARK: Optional - Managing the Display of Overlays
@@ -384,7 +383,7 @@ struct MapView: UIViewRepresentable {
         
         // Tells the delegate that one or more renderer objects were added to the map.
         func mapView(_ mapView: MKMapView, didAdd: [MKOverlayRenderer]) {
-            print("Called19: 'func mapView(MKMapView, didAdd: [MKOverlayRenderer])'")
+            MyLog.debug("Called19: 'func mapView(MKMapView, didAdd: [MKOverlayRenderer])'")
         }
             
         
