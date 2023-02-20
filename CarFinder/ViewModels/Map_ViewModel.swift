@@ -17,9 +17,10 @@ import Network
 //https://www.hackingwithswift.com/books/ios-swiftui/writing-data-to-the-documents-directory
 //https://www.hackingwithswift.com/example-code/strings/how-to-save-a-string-to-a-file-on-disk-with-writeto
 
-//Test Logger io.log2phys wdhx
+//Test Logger io.log2phys
 //https://www.avanderlee.com/workflow/oslog-unified-logging/
 
+let FOR_RELEASE = false // Set to true if releasing the app.
 
 class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // This class
@@ -43,7 +44,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     private var mLocationManager: CLLocationManager?
     
     
-    // Mark: Flag Variables
+    // MARK: Flag Variables
     var isHybrid: Bool { // Expose this so the View can modify it indirectily through the ViewModel
         get {
             return theMapModel.isHybrid
@@ -204,7 +205,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
         if theMapModel.updateParkingSpotFlag == true {
             // Update the parking spot location and set the flag back to false
             theMapModel.updateParkingSpotFlag = false
-            ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) // wdhx
+            ParkingSpotEntity.getParkingSpotEntity().updateLocation(lat: currentLocation.latitude, lon: currentLocation.longitude, andSave: true) 
 //            MyLog.debug("** Updated the parking spot in Map_ViewModel.locationManager(didUpdateLocations)")
             
             // Now that the parking spot has been updated, let the map know to move the marker
@@ -270,7 +271,7 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     func orientMap() {
         orientMapFlag = true // Trigger map update
         mStillNeedToOrientMap = true // True until the map tells us it's been oriented using the mapHasBeenOriented() intent func
-//        AlertDialog.shared.Alert("Test Alert: Called from ViewModel orientMap()")
+//        AlertMessage.shared.Alert("Test Alert: Called from ViewModel orientMap()")
     }
 
     
@@ -283,6 +284,8 @@ class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     }
         
     func requestReview() {
+        if !FOR_RELEASE { return } // Don't show review request when I'm testing the app.
+        
         if AppInfoEntity.getAppInfoEntity().usageCount > AppInfoEntity.REVIEW_THRESHOLD {
         // NOTE: If not connected to Internet, then requestReview will lock the interface
             let reachability = try? Reachability() // Return nil if throws an error

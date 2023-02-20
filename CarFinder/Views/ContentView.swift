@@ -13,7 +13,7 @@ import StoreKit
 struct ContentView: View {
     @ObservedObject var theMap_ViewModel: Map_ViewModel
     @Environment(\.managedObjectContext) private var viewContext
-    @State var theAlert = AlertDialog.shared // Alert -Changed from @ObservedObject to State to avoid AttributeGraph cycle warnings
+    @StateObject var theAlert = AlertMessage.shared // Alert -Changed from @ObservedObject to StateObject to avoid AttributeGraph cycle warnings
     
     var body: some View {
         NavigationView {
@@ -52,7 +52,7 @@ struct ContentView: View {
 //                    )
 //                    .gesture(TapGesture()
 //                                .onEnded({
-//                        print("Tapped! wdhx")
+//                        print("Tapped!")
 //                    }))
             } // VStack
 
@@ -102,12 +102,12 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-        } // VStack
+        } // NavigationView
         // Detect moving back to foreground
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             theMap_ViewModel.orientMap() // Re-orient map when app moves back to the foreground
             AppInfoEntity.getAppInfoEntity().incrementUsageCount() // Count usage to know when to display the request for a review
-        } // navigation view
+        }
     } // body
     
     

@@ -119,5 +119,3 @@ struct TextLog: TextOutputStream {
         }
     }
 }
-
-import Foundation

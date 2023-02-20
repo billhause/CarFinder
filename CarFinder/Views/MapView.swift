@@ -19,6 +19,8 @@ import os
 //
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+//var globalHeadingLocked = false // For debugging and making videos.  Normally this should always be false for release version
+
 struct MapView: UIViewRepresentable {
     typealias UIViewType = MKMapView
     
@@ -136,6 +138,9 @@ struct MapView: UIViewRepresentable {
 
         // Set the HEADING
         theMapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
+//        if !globalHeadingLocked { // For debugging and recording videos.  Normally this will always be false wdhx
+//            theMapView.camera.heading=theMap_ViewModel.getCurrentHeading() // Adjustes map direction without affecting zoom level
+//        }
         
     }
     
@@ -150,7 +155,7 @@ struct MapView: UIViewRepresentable {
     // This class is defined INSIDE the MapView Struct
     class MapViewCoordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate { // TouchDetect: added Gesture Delegate protocol
         var theMap_ViewModel: Map_ViewModel
-        var parent: MapView // TODO: Remove Parent and use the parent's mapView member instead
+        var parent: MapView // TouchDetect - Will need to access the parent MapView object
         var mTapGestureRecognizer = UITapGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
         var mPinchGestureRecognizer = UIPinchGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
 //        var mPanGestureRecognizer = UIPanGestureRecognizer() // TouchDetect - This also gets passed into the callbacks
@@ -207,6 +212,9 @@ struct MapView: UIViewRepresentable {
             // postion on map, CLLocationCoordinate2D
             let coordinate = self.parent.mMapView.convert(location, toCoordinateFrom: self.parent.mMapView)
             MyLog.debug("LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
+//            AlertMessage.shared.Alert("wdhx LatLon Tapped: Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
+            
+//            globalHeadingLocked = !globalHeadingLocked // Toggle when screen is tapped.  Comment this line out for relase version wdhx
         }
 
         // NOTE: FOR SOME REASON the panHandler and pinchHandler call-backs don't ever get called
