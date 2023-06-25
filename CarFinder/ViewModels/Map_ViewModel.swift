@@ -20,7 +20,7 @@ import Network
 //Test Logger io.log2phys
 //https://www.avanderlee.com/workflow/oslog-unified-logging/
 
-let FOR_RELEASE = false // Set to true if releasing the app.
+let FOR_RELEASE = true // Set to true if releasing the app.
 
 class Map_ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate  {
     // This class

@@ -75,7 +75,7 @@ struct ContentView: View {
                 ToolbarItemGroup(placement: .bottomBar) {
                     // USE EITHER A PICKER or a TOGGLE below comment one out
                     // Picker
-                    Picker("What kind of map do you want", selection: $theMap_ViewModel.isHybrid) {
+                    Picker("Pick map type", selection: $theMap_ViewModel.isHybrid) {
                         Text("Hybrid").tag(true)
                         Text("Standard").tag(false)
                     }
